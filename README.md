@@ -168,3 +168,8 @@ The Blitz community is warm, safe, diverse, inclusive, and fun! Feel free to rea
 - [Forum discussions](https://github.com/blitz-js/blitz/discussions)
 - [Sponsors and donations](https://github.com/blitz-js/blitz#sponsors-and-donations)
 - [Contributing Guide](https://blitzjs.com/docs/contributing)
+
+blitz generate all account name 'apiKey:string?' 'apiSecret:string?' 'institution:Institution?' type 'wallets:Wallet[]' 'holdings:Holding[]' belongsTo:user
+blitz generate resource address name:string? address
+blitz generate all wallet name type symbol amount:int 'xpub:string?' 'addresses:Address[]' belongsTo:Account --parent account
+blitz generate all holding name symbol amount:int belongsTo:Account --parent account

@@ -1,5 +1,7 @@
 import { ReactNode } from "react"
 import { Head } from "blitz"
+import NavBar from "./components/NavBar"
+import Footer from "./components/Footer"
 
 type LayoutProps = {
   title?: string
@@ -10,11 +12,12 @@ const Layout = ({ title, children }: LayoutProps) => {
   return (
     <>
       <Head>
-        <title>{title || "nexus-app"}</title>
+        <title>{title || "Nexus Finance"}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-
+      <NavBar />
       {children}
+      <Footer />
     </>
   )
 }
