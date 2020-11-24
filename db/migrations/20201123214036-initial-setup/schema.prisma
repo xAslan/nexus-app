@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -61,8 +61,6 @@ model Account {
   user        User         @relation(fields: [userId], references: [id])
   userId      Int          
   lastSync    DateTime?
-  lastSyncEnd DateTime?
-  syncStatus  String       @default("inactive")
 }
 
 model Wallet {
