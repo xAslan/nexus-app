@@ -94,5 +94,5 @@ model Holding {
   wallet    Wallet?
   amount    Float      
   account   Account  @relation(fields: [accountId], references: [id])
-  accountId Int      
+  accountId Int 
 }
