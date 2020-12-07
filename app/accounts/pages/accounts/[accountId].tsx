@@ -3,12 +3,17 @@ import Layout from "app/layouts/Layout"
 import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
+import syncAccount from "app/accounts/mutations/syncAccount"
 
 export const Account = () => {
   const router = useRouter()
   const accountId = useParam("accountId", "number")
-  const [account] = useQuery(getAccount, { where: { id: accountId } })
+  const [account, { setQueryData }] = useQuery(getAccount, {
+    where: { id: accountId },
+    include: { holdings: true },
+  })
   const [deleteAccountMutation] = useMutation(deleteAccount)
+  const [syncAccountMutation] = useMutation(syncAccount)
 
   return (
     <div>
@@ -29,6 +34,30 @@ export const Account = () => {
         }}
       >
         Delete
+      </button>
+      <button
+        type="button"
+        onClick={async () => {
+          const lastSync = new Date()
+          const accountUpdates = {
+            ...account,
+            lastSync,
+            syncStatus: "active",
+          }
+          try {
+            setQueryData(accountUpdates, { refetch: false })
+            console.log("start sync", accountUpdates)
+            const updated = await syncAccountMutation({ accountId: account.id, lastSync })
+            console.log("end sync", updated)
+            setQueryData(updated)
+          } catch (error) {
+            setQueryData(account)
+            console.log(error)
+            alert("Error syncing account " + JSON.stringify(error, null, 2))
+          }
+        }}
+      >
+        Sync Account
       </button>
     </div>
   )

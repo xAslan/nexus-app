@@ -787,6 +787,45 @@
       "arity": "Optional"
     },
     {
+      "tag": "CreateField",
+      "model": "Account",
+      "field": "lastSyncEnd",
+      "type": "DateTime",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Account",
+      "field": "syncStatus",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Account",
+          "field": "syncStatus"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Account",
+          "field": "syncStatus"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "\"inactive\""
+    },
+    {
       "tag": "CreateModel",
       "model": "Wallet"
     },
@@ -886,13 +925,6 @@
     {
       "tag": "CreateField",
       "model": "Wallet",
-      "field": "name",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Wallet",
       "field": "type",
       "type": "String",
       "arity": "Required"
@@ -968,13 +1000,6 @@
       "tag": "CreateField",
       "model": "Wallet",
       "field": "accountId",
-      "type": "Int",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Wallet",
-      "field": "amount",
       "type": "Int",
       "arity": "Required"
     },
@@ -1203,8 +1228,15 @@
     {
       "tag": "CreateField",
       "model": "Holding",
+      "field": "wallet",
+      "type": "Wallet",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Holding",
       "field": "amount",
-      "type": "Int",
+      "type": "Float",
       "arity": "Required"
     },
     {

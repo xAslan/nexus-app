@@ -11,24 +11,19 @@ const NewAccountPage: BlitzPage = () => {
     <div>
       <h1>Create New Account</h1>
       <AccountForm
-        initialValues={{}}
+        account={null}
         onSubmit={async (event) => {
-          console.log(event)
-          console.log(event.target[0].value)
-          console.log(event.target[1].value)
-          console.log(event.target[2].value)
-          console.log(event.target[3].value)
+          const data = {
+            name: event.target[1].value,
+            type: "finance",
+            apiKey: event.target[2]?.value,
+            apiSecret: event.target[3]?.value,
+            institution: { connect: { id: parseInt(event.target[0].value) } },
+            user: { connect: { id: session.userId } },
+          }
+          console.log("new.tsx", data)
           try {
-            const account = await createAccountMutation({
-              data: {
-                name: event.target[1].value,
-                type: "finance",
-                apiKey: event.target[2].value,
-                apiSecret: event.target[3].value,
-                institution: { connect: { id: parseInt(event.target[0].value) } },
-                user: { connect: { id: session.userId } },
-              },
-            })
+            const account = await createAccountMutation({ data })
             alert("Success!" + JSON.stringify(account))
             router.push(`/accounts/${account.id}`)
           } catch (error) {

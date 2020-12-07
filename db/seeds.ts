@@ -13,7 +13,7 @@ const seed = async () => {
   //   await db.project.create({ data: { name: "Project " + i } })
   // }
   let defaultPass = await hashPassword("123456")
-  await db.user.create({
+  const admin = await db.user.create({
     data: { name: "Admin", email: "admin@test.com", hashedPassword: defaultPass, role: "admin" },
   })
   await db.user.create({
@@ -22,6 +22,12 @@ const seed = async () => {
   await db.institution.create({ data: { name: "Binance", shortName: "binance", authType: "api" } })
   await db.institution.create({ data: { name: "Chase", shortName: "chase" } })
   await db.institution.create({ data: { name: "eToro", shortName: "etoro" } })
+  /*await db.account.create({data: {
+    name: 'Test Binance Account1', 
+    user: admin,
+    apiKey: env.process.BINANCE_API_KEY
+    apiSecret : env.process.BINANCE_API_SECRET
+  }})*/
 }
 
 export default seed

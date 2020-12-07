@@ -69,14 +69,12 @@ model Wallet {
   id        Int       @default(autoincrement()) @id
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  name      String    
-  type      String   // 
+  type      String   // multi coin / single coin
   symbol    String    
   xpub      String?   
   addresses Address[] 
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int       
-  amount Int 
 }
 
 model Address {
@@ -92,8 +90,9 @@ model Holding {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   
-  symbol    String   
-  amount    Int      
+  symbol    String
+  wallet    Wallet?
+  amount    Float      
   account   Account  @relation(fields: [accountId], references: [id])
   accountId Int      
 }

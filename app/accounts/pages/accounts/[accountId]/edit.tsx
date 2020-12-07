@@ -4,6 +4,7 @@ import { Link, useRouter, useQuery, useMutation, useParam, BlitzPage } from "bli
 import getAccount from "app/accounts/queries/getAccount"
 import updateAccount from "app/accounts/mutations/updateAccount"
 import AccountForm from "app/accounts/components/AccountForm"
+import { AccountsList } from ".."
 
 export const EditAccount = () => {
   const router = useRouter()
@@ -17,12 +18,17 @@ export const EditAccount = () => {
       <pre>{JSON.stringify(account)}</pre>
 
       <AccountForm
-        initialValues={account}
-        onSubmit={async () => {
+        account={account}
+        onSubmit={async (event) => {
           try {
             const updated = await updateAccountMutation({
               where: { id: account.id },
-              data: { name: "MyNewName" },
+              data: {
+                name: event.target[1].value,
+                type: "finance",
+                apiKey: event.target[2].value,
+                apiSecret: event.target[3].value,
+              },
             })
             await setQueryData(updated)
             alert("Success!" + JSON.stringify(updated))

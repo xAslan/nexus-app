@@ -1,6 +1,6 @@
-# Migration `20201123214036-initial-setup`
+# Migration `20201201205043-init-db`
 
-This migration has been generated at 11/23/2020, 4:40:36 PM.
+This migration has been generated at 12/1/2020, 3:50:44 PM.
 You can check out the [state of the schema](./schema.prisma) after the migration.
 
 ## Database Steps
@@ -55,6 +55,8 @@ CREATE TABLE "Account" (
     "type" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     "lastSync" TIMESTAMP(3),
+    "lastSyncEnd" TIMESTAMP(3),
+    "syncStatus" TEXT NOT NULL DEFAULT E'inactive',
     "institutionId" INTEGER,
 
     PRIMARY KEY ("id")
@@ -64,12 +66,10 @@ CREATE TABLE "Wallet" (
 "id" SERIAL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "symbol" TEXT NOT NULL,
     "xpub" TEXT,
     "accountId" INTEGER NOT NULL,
-    "amount" INTEGER NOT NULL,
 
     PRIMARY KEY ("id")
 )
@@ -91,8 +91,9 @@ CREATE TABLE "Holding" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "symbol" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
+    "amount" DECIMAL(65,30) NOT NULL,
     "accountId" INTEGER NOT NULL,
+    "walletId" INTEGER,
 
     PRIMARY KEY ("id")
 )
@@ -113,6 +114,8 @@ ALTER TABLE "Wallet" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON D
 
 ALTER TABLE "Address" ADD FOREIGN KEY("walletId")REFERENCES "Wallet"("id") ON DELETE SET NULL ON UPDATE CASCADE
 
+ALTER TABLE "Holding" ADD FOREIGN KEY("walletId")REFERENCES "Wallet"("id") ON DELETE SET NULL ON UPDATE CASCADE
+
 ALTER TABLE "Holding" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE
 ```
 
@@ -120,10 +123,10 @@ ALTER TABLE "Holding" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON 
 
 ```diff
 diff --git schema.prisma schema.prisma
-migration ..20201123214036-initial-setup
+migration ..20201201205043-init-db
 --- datamodel.dml
 +++ datamodel.dml
-@@ -1,0 +1,97 @@
+@@ -1,0 +1,98 @@
 +// This is your Prisma schema file,
 +// learn more about it in the docs: https://pris.ly/d/prisma-schema
 +
@@ -187,20 +190,20 @@ migration ..20201123214036-initial-setup
 +  user        User         @relation(fields: [userId], references: [id])
 +  userId      Int          
 +  lastSync    DateTime?
++  lastSyncEnd DateTime?
++  syncStatus  String       @default("inactive")
 +}
 +
 +model Wallet {
 +  id        Int       @default(autoincrement()) @id
 +  createdAt DateTime  @default(now())
 +  updatedAt DateTime  @updatedAt
-+  name      String    
-+  type      String   // 
++  type      String   // multi coin / single coin
 +  symbol    String    
 +  xpub      String?   
 +  addresses Address[] 
 +  account   Account   @relation(fields: [accountId], references: [id])
 +  accountId Int       
-+  amount Int 
 +}
 +
 +model Address {
@@ -216,8 +219,9 @@ migration ..20201123214036-initial-setup
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
 +  name      String   
-+  symbol    String   
-+  amount    Int      
++  symbol    String
++  wallet    Wallet?
++  amount    Float      
 +  account   Account  @relation(fields: [accountId], references: [id])
 +  accountId Int      
 +}

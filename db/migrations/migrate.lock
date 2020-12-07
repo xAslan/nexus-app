@@ -1,4 +1,3 @@
 # Prisma Migrate lockfile v1
 
-20201123214036-initial-setup
-20201124005122-update-account-sync
+20201201205043-init-db

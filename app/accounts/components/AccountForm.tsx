@@ -1,18 +1,19 @@
-import React, { Suspense, useState } from "react"
+import React, { Suspense, useEffect, useState } from "react"
 import { useQuery } from "blitz"
+import getInstitution from "app/institutions/queries/getInstitution"
 import getInstitutions from "app/institutions/queries/getInstitutions"
-import { isNamedTupleMember } from "typescript"
-import { Form, Field } from "react-final-form"
-import { setIn } from "final-form"
+import { Account, Institution } from "@prisma/client"
 
 type AccountFormProps = {
-  initialValues: any
+  account: Account | undefined
   onSubmit: React.FormEventHandler<HTMLFormElement>
 }
 
-const AccountForm = ({ initialValues, onSubmit }: AccountFormProps) => {
-  const [institution, setInstitution] = useState(initialValues.institution)
-  const [authForm, setAuthForm] = useState(null)
+const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
+  const [institution, setInstitution] = useState<Institution | null>(null)
+  const [initialInstitution] = useQuery(getInstitution, { where: { id: account?.institutionId } })
+  setInstitution(initialInstitution)
+
   return (
     <form
       onSubmit={(event) => {
@@ -21,19 +22,19 @@ const AccountForm = ({ initialValues, onSubmit }: AccountFormProps) => {
       }}
     >
       <Suspense fallback="Loading...">
-        <InstitutionSelect {...{ institution, setInstitution, setAuthForm }} />
+        <InstitutionSelect {...{ institution, setInstitution }} />
       </Suspense>
       <br />
       Account Nickname (optional):
-      <input placeholder="My Special Account..." />
+      <input placeholder="My Special Account..." defaultValue={account?.name} />
       <br></br>
-      {institution?.authType == "api" && <ApiForm></ApiForm>}
+      {institution?.authType == "api" && <ApiForm account={account}></ApiForm>}
       <button>Submit</button>
     </form>
   )
 }
 
-const InstitutionSelect = ({ institution, setInstitution, setAuthForm }) => {
+const InstitutionSelect = ({ institution, setInstitution }) => {
   const [{ institutions }] = useQuery(getInstitutions, {})
   return (
     <select
@@ -42,7 +43,6 @@ const InstitutionSelect = ({ institution, setInstitution, setAuthForm }) => {
       value={institution?.id}
       onBlur={(e) => {
         setInstitution(institutions.find((i) => i.id == parseInt(e.target.value)))
-        console.log(e.target.value)
       }}
     >
       <option>Select an Institution</option>
@@ -55,14 +55,15 @@ const InstitutionSelect = ({ institution, setInstitution, setAuthForm }) => {
   )
 }
 
-const ApiForm = () => {
+const ApiForm = ({ account }) => {
+  console.log(account?.account)
   return (
     <>
       API Key
-      <input id="apiKey" placeholder="abc123..." />
+      <input id="apiKey" placeholder="abc123..." defaultValue={account?.apiKey} />
       <br />
       API Secret
-      <input id="apiSecret" placeholder="123abc..." />
+      <input id="apiSecret" placeholder="123abc..." defaultValue={account?.apiSecret} />
       <br />
     </>
   )
