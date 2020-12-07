@@ -86,7 +86,7 @@ model Address {
 }
 
 model Holding {
-  id        Int      @default(autoincrement()) @id
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   
@@ -95,4 +95,5 @@ model Holding {
   amount    Float      
   account   Account  @relation(fields: [accountId], references: [id])
   accountId Int 
+  @@id([symbol, accountId])
 }

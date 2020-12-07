@@ -1,4 +1,4 @@
-import React, { Suspense, useState } from "react"
+import React, { Suspense, useEffect, useState } from "react"
 import { useQuery } from "blitz"
 import getInstitution from "app/institutions/queries/getInstitution"
 import getInstitutions from "app/institutions/queries/getInstitutions"
@@ -12,11 +12,14 @@ type AccountFormProps = {
 const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
   //const [initialInstitution, { setQueryData }] = useQuery(getInstitution, { where: { id: 1 } })
   const [institution, setInstitution] = useState(null)
-  let initialInstitution = ([initialInstitution] = useQuery(getInstitution, { //if(account?.institutionId) {
-    where: { id: account.institutionId },
-  }))
-  //}
-  //const initialInstitution = useQuery(getInstution, { })
+  const [initialInstitution] = useQuery(
+    getInstitution,
+    { where: { id: account?.institutionId } },
+    { enabled: !!account?.institutionId }
+  )
+  useEffect(() => {
+    setInstitution(initialInstitution)
+  }, [initialInstitution])
 
   return (
     <form
