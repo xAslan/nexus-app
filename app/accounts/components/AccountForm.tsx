@@ -12,8 +12,9 @@ type AccountFormProps = {
 const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
   //const [initialInstitution, { setQueryData }] = useQuery(getInstitution, { where: { id: 1 } })
   const [institution, setInstitution] = useState(null)
-  let initialInstitution = (//if(account?.institutionId) {
-  null[initialInstitution] = useQuery(getInstitution, { where: { id: account.institutionId } }))
+  let initialInstitution = ([initialInstitution] = useQuery(getInstitution, { //if(account?.institutionId) {
+    where: { id: account.institutionId },
+  }))
   //}
   //const initialInstitution = useQuery(getInstution, { })
 
