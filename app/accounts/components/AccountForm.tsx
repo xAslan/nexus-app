@@ -1,18 +1,21 @@
-import React, { Suspense, useEffect, useState } from "react"
+import React, { Suspense, useState } from "react"
 import { useQuery } from "blitz"
 import getInstitution from "app/institutions/queries/getInstitution"
 import getInstitutions from "app/institutions/queries/getInstitutions"
-import { Account, Institution } from "@prisma/client"
+import { Account } from "@prisma/client"
 
 type AccountFormProps = {
-  account: Account | undefined
+  account: Account | null
   onSubmit: React.FormEventHandler<HTMLFormElement>
 }
 
 const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
-  const [institution, setInstitution] = useState<Institution | null>(null)
-  const [initialInstitution] = useQuery(getInstitution, { where: { id: account?.institutionId } })
-  setInstitution(initialInstitution)
+  //const [initialInstitution, { setQueryData }] = useQuery(getInstitution, { where: { id: 1 } })
+  const [institution, setInstitution] = useState(null)
+  let initialInstitution = (//if(account?.institutionId) {
+  null[initialInstitution] = useQuery(getInstitution, { where: { id: account.institutionId } }))
+  //}
+  //const initialInstitution = useQuery(getInstution, { })
 
   return (
     <form
