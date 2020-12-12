@@ -17,6 +17,7 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
     where: { id: accountId },
     include: { institution: true },
   })
+
   const institution = account?.institution
   if (!institution)
     throw new Error("Account cannot be synced because it has no institution to sync to")
@@ -34,13 +35,14 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
       enableRateLimit: true,
     })
   const balance = await exchange.fetchBalance({ params: {} })
+
   const newBal = Object.fromEntries(
     Object.entries(balance["total"]).filter(([key, value]) => value > 0)
   )
   console.log(balance["info"])
 
   Object.keys(newBal).forEach((symbol) => {
-    let holding = { name: "holdingName", symbol, amount: parseInt(newBal[symbol]) }
+    let holding = { name: "holdingName", symbol, amount: parseFloat(newBal[symbol]) }
     let holdingUpsert = { create: holding, update: holding, where: { symbol } }
     holdings.push(holdingUpsert)
     console.log(holdingUpsert)
