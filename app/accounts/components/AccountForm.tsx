@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from "react"
 import { useQuery } from "blitz"
 import getInstitution from "app/institutions/queries/getInstitution"
 import getInstitutions from "app/institutions/queries/getInstitutions"
-import { Account } from "@prisma/client"
+import { Account, Institution } from "@prisma/client"
 
 type AccountFormProps = {
   account: Account | null
@@ -10,11 +10,10 @@ type AccountFormProps = {
 }
 
 const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
-  //const [initialInstitution, { setQueryData }] = useQuery(getInstitution, { where: { id: 1 } })
-  const [institution, setInstitution] = useState(null)
+  const [institution, setInstitution] = useState<Institution | null>(null)
   const [initialInstitution] = useQuery(
     getInstitution,
-    { where: { id: account?.institutionId } },
+    { where: { id: account?.institutionId! } },
     { enabled: !!account?.institutionId }
   )
   useEffect(() => {
