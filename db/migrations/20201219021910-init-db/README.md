@@ -1,11 +1,13 @@
-# Migration `20201201205043-init-db`
+# Migration `20201219021910-init-db`
 
-This migration has been generated at 12/1/2020, 3:50:44 PM.
+This migration has been generated at 12/19/2020, 2:19:10 AM.
 You can check out the [state of the schema](./schema.prisma) after the migration.
 
 ## Database Steps
 
 ```sql
+CREATE TYPE "public"."AccountType" AS ENUM ('BLOCKCHAIN_WALLET', 'TRADITIONAL_BANK', 'TRADITIONAL_BROKERAGE', 'TRADITIONAL_CREDIT', 'CRYPTO_EXCHANGE', 'CRYPTO_SERVICE')
+
 CREATE TABLE "User" (
 "id" SERIAL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -52,7 +54,8 @@ CREATE TABLE "Account" (
     "name" TEXT NOT NULL,
     "apiKey" TEXT,
     "apiSecret" TEXT,
-    "type" TEXT NOT NULL,
+    "plaidToken" TEXT,
+    "type" "AccountType" NOT NULL,
     "userId" INTEGER NOT NULL,
     "lastSync" TIMESTAMP(3),
     "lastSyncEnd" TIMESTAMP(3),
@@ -86,7 +89,6 @@ CREATE TABLE "Address" (
 )
 
 CREATE TABLE "Holding" (
-"id" SERIAL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
@@ -95,7 +97,7 @@ CREATE TABLE "Holding" (
     "accountId" INTEGER NOT NULL,
     "walletId" INTEGER,
 
-    PRIMARY KEY ("id")
+    PRIMARY KEY ("symbol","accountId")
 )
 
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email")
@@ -123,10 +125,10 @@ ALTER TABLE "Holding" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON 
 
 ```diff
 diff --git schema.prisma schema.prisma
-migration ..20201201205043-init-db
+migration ..20201219021910-init-db
 --- datamodel.dml
 +++ datamodel.dml
-@@ -1,0 +1,98 @@
+@@ -1,0 +1,109 @@
 +// This is your Prisma schema file,
 +// learn more about it in the docs: https://pris.ly/d/prisma-schema
 +
@@ -182,9 +184,10 @@ migration ..20201201205043-init-db
 +  updatedAt   DateTime     @updatedAt
 +  name        String       // display name for account
 +  apiKey      String?      
-+  apiSecret   String?      
++  apiSecret   String?
++  plaidToken  String?      
 +  institution Institution? 
-+  type        String       //manual, blockchain_wallet, institution, defi ENUM
++  type        AccountType       //manual, blockchain_wallet, institution, defi ENUM
 +  wallets     Wallet[]     
 +  holdings    Holding[]    
 +  user        User         @relation(fields: [userId], references: [id])
@@ -215,7 +218,7 @@ migration ..20201201205043-init-db
 +}
 +
 +model Holding {
-+  id        Int      @default(autoincrement()) @id
++
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
 +  name      String   
@@ -223,7 +226,17 @@ migration ..20201201205043-init-db
 +  wallet    Wallet?
 +  amount    Float      
 +  account   Account  @relation(fields: [accountId], references: [id])
-+  accountId Int      
++  accountId Int 
++  @@id([symbol, accountId])
++}
++
++enum AccountType {
++  BLOCKCHAIN_WALLET      // ?
++  TRADITIONAL_BANK       // Plaid
++  TRADITIONAL_BROKERAGE  // Plaid
++  TRADITIONAL_CREDIT     // Plaid
++  CRYPTO_EXCHANGE        // ccxt
++  CRYPTO_SERVICE         // api
 +}
 ```
 

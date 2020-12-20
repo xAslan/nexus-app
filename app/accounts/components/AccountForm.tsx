@@ -47,6 +47,9 @@ const InstitutionSelect = ({ institution, setInstitution }) => {
       required
       id="institution"
       value={institution?.id}
+      onChange={(e) => {
+        setInstitution(institutions.find((i) => i.id == parseInt(e.target.value)))
+      }}
       onBlur={(e) => {
         setInstitution(institutions.find((i) => i.id == parseInt(e.target.value)))
       }}

@@ -1,8 +1,6 @@
 import { Ctx } from "blitz"
-import db, { HoldingCreateArgs } from "db"
-import { Account, HoldingCreateInput } from "@prisma/client"
+import db from "db"
 import { wait } from "utils/utils"
-import { string } from "zod"
 //import updateAccount from "./updateAccount"
 //const { spawn } = require('child_process')
 var ccxt = require("ccxt")
@@ -12,12 +10,12 @@ type SyncAccountInput = {
   lastSync: Date
 }
 export default async function syncAccount({ accountId, lastSync }: SyncAccountInput, ctx: Ctx) {
-  //const institution = await db.institution.findOne({where: { id : account.institutionId }})
-  const account = await db.account.findOne({
+  const account = await db.account.findUnique({
     where: { id: accountId },
     include: { institution: true },
   })
   const institution = account?.institution
+  if (!account) throw new Error("no account found with account id")
   if (!institution)
     throw new Error("Account cannot be synced because it has no institution to sync to")
   if (institution.authType == "api" && (!account?.apiKey || !account?.apiSecret))
@@ -37,11 +35,14 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
   const newBal = Object.fromEntries(
     Object.entries(balance["total"]).filter(([key, value]) => value > 0)
   )
-  console.log(balance["info"])
 
   Object.keys(newBal).forEach((symbol) => {
     let holding = { name: "holdingName", symbol, amount: parseInt(newBal[symbol]) }
-    let holdingUpsert = { create: holding, update: holding, where: { symbol } }
+    let holdingUpsert = {
+      create: holding,
+      update: holding,
+      where: { symbol_accountId: { symbol, accountId: account.id } },
+    }
     holdings.push(holdingUpsert)
     console.log(holdingUpsert)
   })
