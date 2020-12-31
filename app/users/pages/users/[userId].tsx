@@ -1,10 +1,11 @@
 import { Suspense } from "react"
-import Layout from "app/layouts/Layout"
+import { DashboardLayout } from "app/layouts/Layout"
 import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
 import getUser from "app/users/queries/getUser"
 import deleteUser from "app/users/mutations/deleteUser"
 import getAccount from "app/accounts/queries/getAccount"
 import PieChart from "app/users/components/Piechart"
+import { Button } from "antd"
 
 export const User = () => {
   const router = useRouter()
@@ -33,8 +34,8 @@ export const User = () => {
         <a>Edit</a>
       </Link>
 
-      <button
-        type="button"
+      <Button
+        type="primary"
         onClick={async () => {
           if (window.confirm("This will be deleted")) {
             await deleteUserMutation({ where: { id: user.id } })
@@ -43,7 +44,7 @@ export const User = () => {
         }}
       >
         Delete
-      </button>
+      </Button>
     </div>
   )
 }
@@ -56,6 +57,6 @@ const ShowUserPage: BlitzPage = () => {
   )
 }
 
-ShowUserPage.getLayout = (page) => <Layout title={"User"}>{page}</Layout>
+ShowUserPage.getLayout = (page) => <DashboardLayout title={"User"}>{page}</DashboardLayout>
 
 export default ShowUserPage

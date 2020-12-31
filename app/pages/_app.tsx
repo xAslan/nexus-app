@@ -1,11 +1,28 @@
-import { AppProps, ErrorComponent, useRouter, AuthenticationError, AuthorizationError } from "blitz"
+import { useState, useEffect } from "react"
+import {
+  useSession,
+  AppProps,
+  ErrorComponent,
+  useRouter,
+  AuthenticationError,
+  AuthorizationError,
+} from "blitz"
 import { ErrorBoundary, FallbackProps } from "react-error-boundary"
 import { queryCache } from "react-query"
 import LoginForm from "app/auth/components/LoginForm"
+import "../../styles/antd.less"
 
 export default function App({ Component, pageProps }: AppProps) {
   const getLayout = Component.getLayout || ((page) => page)
   const router = useRouter()
+  const session = useSession()
+  const [userId, setUserId] = useState(null)
+
+  useEffect(() => {
+    setUserId(session.userId)
+    console.log("session changed")
+    console.log(session.userId)
+  }, [session.userId])
 
   return (
     <ErrorBoundary
