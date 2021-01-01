@@ -43,10 +43,7 @@ export const HeaderNav = styled.nav`
 
   li {
     padding-right: 10%;
-
-    &:last-child {
-      padding-right: 0;
-    }
+    display: flex;
   }
 `
 

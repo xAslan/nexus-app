@@ -2,7 +2,7 @@ import { ReactNode, Suspense } from "react"
 import { useMutation, useRouter, useSession, Link } from "blitz"
 import logout from "app/auth/mutations/logout"
 import { Avatar, Button, Row, Col, Input } from "antd"
-import { AiOutlineUser, AiOutlineSearch } from "react-icons/ai"
+import { AiOutlineMenu, AiOutlineUser, AiOutlineSearch } from "react-icons/ai"
 import { WiDaySunny } from "react-icons/wi"
 import * as styled from "app/layouts/components/styles"
 
@@ -12,15 +12,18 @@ export const NavBar = (props) => {
 
   return (
     <styled.HeaderNav>
-      <Row justify="space-between">
-        <Col xs={8} md={4}>
+      <Row justify="space-between" align="middle" style={{ height: "100%" }}>
+        <Col xs={12} sm={8} md={4}>
           <Link href="/">
             <a>
               <img src="/logo.svg" alt="Nexus Finance Logo" />
             </a>
           </Link>
         </Col>
-        <Col xs={12} md={12}>
+        <Col xs={4} sm={0}>
+          <Button ghost icon={<AiOutlineMenu />} />
+        </Col>
+        <Col xs={0} sm={12}>
           <ul>
             <li>
               <Link href="/accounts">
