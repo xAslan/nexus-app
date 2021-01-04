@@ -2,6 +2,18 @@
   "version": "0.3.14-fixed",
   "steps": [
     {
+      "tag": "CreateEnum",
+      "enum": "AccountType",
+      "values": [
+        "BLOCKCHAIN_WALLET",
+        "TRADITIONAL_BANK",
+        "TRADITIONAL_BROKERAGE",
+        "TRADITIONAL_CREDIT",
+        "CRYPTO_EXCHANGE",
+        "CRYPTO_SERVICE"
+      ]
+    },
+    {
       "tag": "CreateSource",
       "source": "db"
     },
@@ -701,6 +713,13 @@
     {
       "tag": "CreateField",
       "model": "Account",
+      "field": "plaidToken",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Account",
       "field": "institution",
       "type": "Institution",
       "arity": "Optional"
@@ -709,7 +728,7 @@
       "tag": "CreateField",
       "model": "Account",
       "field": "type",
-      "type": "String",
+      "type": "AccountType",
       "arity": "Required"
     },
     {
@@ -1121,49 +1140,6 @@
     {
       "tag": "CreateField",
       "model": "Holding",
-      "field": "id",
-      "type": "Int",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Holding",
-          "field": "id"
-        },
-        "directive": "default"
-      }
-    },
-    {
-      "tag": "CreateArgument",
-      "location": {
-        "tag": "Directive",
-        "path": {
-          "tag": "Field",
-          "model": "Holding",
-          "field": "id"
-        },
-        "directive": "default"
-      },
-      "argument": "",
-      "value": "autoincrement()"
-    },
-    {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Holding",
-          "field": "id"
-        },
-        "directive": "id"
-      }
-    },
-    {
-      "tag": "CreateField",
-      "model": "Holding",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1291,6 +1267,29 @@
       "field": "accountId",
       "type": "Int",
       "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Holding"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Model",
+          "model": "Holding"
+        },
+        "directive": "id"
+      },
+      "argument": "",
+      "value": "[symbol, accountId]"
     }
   ]
 }

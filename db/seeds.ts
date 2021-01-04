@@ -25,8 +25,8 @@ const seed = async () => {
   /*await db.account.create({data: {
     name: 'Test Binance Account1', 
     user: admin,
-    apiKey: env.process.BINANCE_API_KEY
-    apiSecret : env.process.BINANCE_API_SECRET
+    apiKey: process.env.BINANCE_API_KEY
+    apiSecret : process.env.BINANCE_API_SECRET
   }})*/
 }
 

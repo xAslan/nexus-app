@@ -15,7 +15,7 @@ const NewAccountPage: BlitzPage = () => {
         onSubmit={async (event) => {
           const data = {
             name: event.target[1].value,
-            type: "finance",
+            type: "TRADITIONAL_BANK",
             apiKey: event.target[2]?.value,
             apiSecret: event.target[3]?.value,
             institution: { connect: { id: parseInt(event.target[0].value) } },

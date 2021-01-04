@@ -1,7 +1,7 @@
 import { Ctx } from "blitz"
-import db, { AccountCreateArgs } from "db"
+import db, { Prisma } from "db"
 
-type CreateAccountInput = Pick<AccountCreateArgs, "data">
+type CreateAccountInput = Pick<Prisma.AccountCreateArgs, "data">
 export default async function createAccount({ data }: CreateAccountInput, ctx: Ctx) {
   console.log(data)
   ctx.session.authorize()

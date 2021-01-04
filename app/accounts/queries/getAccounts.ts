@@ -1,7 +1,7 @@
 import { Ctx } from "blitz"
-import db, { FindManyAccountArgs } from "db"
+import db, { Prisma } from "db"
 
-type GetAccountsInput = Pick<FindManyAccountArgs, "where" | "orderBy" | "skip" | "take">
+type GetAccountsInput = Pick<Prisma.FindManyAccountArgs, "where" | "orderBy" | "skip" | "take">
 
 export default async function getAccounts(
   { where, orderBy, skip = 0, take }: GetAccountsInput,

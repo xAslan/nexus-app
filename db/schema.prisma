@@ -53,9 +53,10 @@ model Account {
   updatedAt   DateTime     @updatedAt
   name        String       // display name for account
   apiKey      String?      
-  apiSecret   String?      
+  apiSecret   String?
+  plaidToken  String?      
   institution Institution? 
-  type        String       //manual, blockchain_wallet, institution, defi ENUM
+  type        AccountType       //manual, blockchain_wallet, institution, defi ENUM
   wallets     Wallet[]     
   holdings    Holding[]    
   user        User         @relation(fields: [userId], references: [id])
@@ -96,4 +97,13 @@ model Holding {
   account   Account  @relation(fields: [accountId], references: [id])
   accountId Int 
   @@id([symbol, accountId])
+}
+
+enum AccountType {
+  BLOCKCHAIN_WALLET      // ?
+  TRADITIONAL_BANK       // Plaid
+  TRADITIONAL_BROKERAGE  // Plaid
+  TRADITIONAL_CREDIT     // Plaid
+  CRYPTO_EXCHANGE        // ccxt
+  CRYPTO_SERVICE         // api
 }

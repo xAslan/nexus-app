@@ -174,3 +174,7 @@ blitz generate resource address name:string? address
 blitz generate all wallet name type symbol amount:int 'xpub:string?' 'addresses:Address[]' belongsTo:Account --parent account
 blitz generate all holding name symbol amount:int belongsTo:Account --parent account
 blitz g resource institution
+
+to get app up and running
+npm start
+blitz db seed
