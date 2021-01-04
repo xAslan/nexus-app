@@ -39,7 +39,7 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
   )
 
   Object.keys(newBal).forEach((symbol) => {
-    let holding = { name: "holdingName", symbol, amount: parseInt(newBal[symbol]) }
+    let holding = { name: "holdingName", symbol, amount: parseFloat(newBal[symbol]) }
     let holdingUpsert = {
       create: holding,
       update: holding,
