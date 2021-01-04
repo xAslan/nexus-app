@@ -13,7 +13,6 @@ const NormalLayout = ({ title, children }: LayoutProps) => {
     <>
       <Head>
         <title>{title || "Nexus Finance"}</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
       {children}
@@ -27,7 +26,6 @@ export const DashboardLayout = ({ title, children }: LayoutProps) => {
     <>
       <Head>
         <title>{title || "Nexus Finance"}</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <DashboardNavBar />
       {children}
