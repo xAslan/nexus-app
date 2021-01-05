@@ -14,6 +14,7 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
     where: { id: accountId },
     include: { institution: true },
   })
+
   const institution = account?.institution
   if (!account) throw new Error("no account found with account id")
   if (!institution)
@@ -32,12 +33,13 @@ export default async function syncAccount({ accountId, lastSync }: SyncAccountIn
       enableRateLimit: true,
     })
   const balance = await exchange.fetchBalance({ params: {} })
+
   const newBal = Object.fromEntries(
     Object.entries(balance["total"]).filter(([key, value]) => value > 0)
   )
 
   Object.keys(newBal).forEach((symbol) => {
-    let holding = { name: "holdingName", symbol, amount: parseInt(newBal[symbol]) }
+    let holding = { name: "holdingName", symbol, amount: parseFloat(newBal[symbol]) }
     let holdingUpsert = {
       create: holding,
       update: holding,

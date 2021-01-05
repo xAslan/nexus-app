@@ -1,6 +1,6 @@
 import { ReactNode } from "react"
 import { Head } from "blitz"
-import NavBar from "./components/NavBar"
+import { NavBar, DashboardNavBar } from "./components/NavBar"
 import Footer from "./components/Footer"
 
 type LayoutProps = {
@@ -8,12 +8,11 @@ type LayoutProps = {
   children: ReactNode
 }
 
-const Layout = ({ title, children }: LayoutProps) => {
+const NormalLayout = ({ title, children }: LayoutProps) => {
   return (
     <>
       <Head>
         <title>{title || "Nexus Finance"}</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
       <NavBar />
       {children}
@@ -22,4 +21,17 @@ const Layout = ({ title, children }: LayoutProps) => {
   )
 }
 
-export default Layout
+export const DashboardLayout = ({ title, children }: LayoutProps) => {
+  return (
+    <>
+      <Head>
+        <title>{title || "Nexus Finance"}</title>
+      </Head>
+      <DashboardNavBar />
+      {children}
+      <Footer />
+    </>
+  )
+}
+
+export default NormalLayout
