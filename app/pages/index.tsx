@@ -28,6 +28,8 @@ const UserInfo = () => {
           User id: <code>{currentUser.id}</code>
           <br />
           User role: <code>{currentUser.role}</code>
+          <br />
+          <p>Hello World</p>
         </div>
         <Link href="/accounts">
           <a className="button small">
