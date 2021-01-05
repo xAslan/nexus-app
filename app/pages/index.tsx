@@ -58,7 +58,7 @@ const UserInfo = () => {
 
 const Home: BlitzPage = () => {
   return (
-    <div className="container">
+    <div className="container"> // hello world
       <main>
         <div className="logo">
           <img src="/logo.png" alt="blitz.js" />
