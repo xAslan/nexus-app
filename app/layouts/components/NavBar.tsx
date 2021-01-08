@@ -12,50 +12,97 @@ export const NavBar = (props) => {
 
   return (
     <styled.HeaderNav>
-      <Row justify="space-between" align="middle" style={{ height: "100%" }}>
-        <Col xs={12} sm={8} md={4}>
-          <Link href="/">
-            <a>
-              <img src="/logo.svg" alt="Nexus Finance Logo" />
-            </a>
-          </Link>
-        </Col>
-        <Col xs={4} sm={0}>
-          <Button ghost icon={<AiOutlineMenu />} />
-        </Col>
-        <Col xs={0} sm={12}>
-          <ul>
-            <li>
-              <Link href="/accounts">
-                <a>Accounts</a>
-              </Link>
-            </li>
-            <li>
-              <Link href={`/users/${session.userId}`}>
-                <a>Dashboard</a>
-              </Link>
-            </li>
-            <li>
-              {session.userId ? (
-                <button
-                  onClick={async () => {
-                    await logoutMutation()
-                  }}
-                >
-                  Logout
-                </button>
-              ) : (
-                <Link href="/login">
-                  <a>Login</a>
-                </Link>
-              )}
-            </li>
-          </ul>
-        </Col>
-      </Row>
+      {session.userId ? (
+        <SignedNav session={session} logoutMutation={logoutMutation} />
+      ) : (
+        <UnSignedNav />
+      )}
     </styled.HeaderNav>
   )
 }
+
+const UnSignedNav = () => (
+  <Row justify="space-between" align="middle" style={{ height: "100%" }}>
+    <Col xs={8} sm={6} md={4}>
+      <Link href="/">
+        <a>
+          <img src="/logo.svg" alt="Nexus Finance Logo" />
+        </a>
+      </Link>
+    </Col>
+    <Col xs={4} sm={0}>
+      <Button ghost icon={<AiOutlineMenu />} />
+    </Col>
+    <Col xs={0} sm={12}>
+      <ul>
+        <li>
+          <Link href="/about">
+            <a>About</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/blog">
+            <a>Blog</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/login">
+            <a>Login</a>
+          </Link>
+        </li>
+        <li>
+          <Link href="/signup">
+            <a>Sign Up</a>
+          </Link>
+        </li>
+      </ul>
+    </Col>
+  </Row>
+)
+
+const SignedNav = ({ session, logoutMutation }) => (
+  <Row justify="space-between" align="middle" style={{ height: "100%" }}>
+    <Col xs={12} sm={8} md={4}>
+      <Link href="/">
+        <a>
+          <img src="/logo.svg" alt="Nexus Finance Logo" />
+        </a>
+      </Link>
+    </Col>
+    <Col xs={4} sm={0}>
+      <Button ghost icon={<AiOutlineMenu />} />
+    </Col>
+    <Col xs={0} sm={12}>
+      <ul>
+        <li>
+          <Link href="/accounts">
+            <a>Accounts</a>
+          </Link>
+        </li>
+        <li>
+          <Link href={`/users/${session.userId}`}>
+            <a>Dashboard</a>
+          </Link>
+        </li>
+        <li>
+          {session.userId ? (
+            <button
+              onClick={async () => {
+                await logoutMutation()
+              }}
+            >
+              Logout
+            </button>
+          ) : (
+            <Link href="/login">
+              <a>Login</a>
+            </Link>
+          )}
+        </li>
+      </ul>
+    </Col>
+  </Row>
+)
 
 export const DashboardNavBar = (props) => {
   return (
@@ -69,7 +116,9 @@ export const DashboardNavBar = (props) => {
           </Link>
         </Col>
         <Col xs={0} md={10}>
-          <Input.Search placeholder="Search" />
+          <styled.SuffixedInput>
+            <input placeholder="Search" />
+          </styled.SuffixedInput>
         </Col>
         <Col xs={12} md={6}>
           <aside>
@@ -84,7 +133,7 @@ export const DashboardNavBar = (props) => {
                 <Avatar icon={<AiOutlineUser />} />
               </Col>
               <Col xs={4}>
-                <Button ghost icon={<WiDaySunny />} />
+                <Button ghost icon={<WiDaySunny size="24px" />} />
               </Col>
             </Row>
           </aside>

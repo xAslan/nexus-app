@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { Card } from "antd"
+import { Table, Card } from "antd"
 
 export const TotalAmountCard = styled(Card)`
   p {
@@ -22,6 +22,8 @@ export const TotalAmountCard = styled(Card)`
 `
 
 export const AccountsCard = styled(Card)`
+  border: 1px solid black;
+
   .ant-card-head {
     background-color: #154a39;
     color: #fff;
@@ -34,8 +36,9 @@ export const AccountsCard = styled(Card)`
 
 export const BanksList = styled.section`
   transition: background-color 0.64s ease;
-  padding: 0 0.64em;
+  padding: 0.64em;
   width: 100%;
+  border-radius: 0.24em;
 
   &:hover {
     background-color: #9be15d;
@@ -59,7 +62,7 @@ export const CenteredButton = styled.section`
 `
 
 export const CashFlowCard = styled(Card)`
-  max-height: 24em;
+  max-height: 22em;
 
   ul {
     list-style: none;
@@ -104,5 +107,28 @@ export const RecentActivitiesCard = styled(CashFlowCard)`
       display: flex;
       flex-direction: column;
     }
+  }
+
+  .ant-avatar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`
+
+export const TransactionsTable = styled(Table)`
+  margin-top: 2em;
+
+  header {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  strong {
+    font-size: 1.4em;
+  }
+
+  tr th {
+    font-weight: bold;
   }
 `

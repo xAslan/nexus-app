@@ -11,7 +11,7 @@ export const HeaderNav = styled.nav`
     max-width: 1080px;
 
     img {
-      width: 80%;
+      width: 100%;
     }
   }
 
@@ -47,6 +47,23 @@ export const HeaderNav = styled.nav`
   }
 `
 
+export const SuffixedInput = styled.section`
+  input {
+    width: 100%;
+    border: 1px solid #3ede86;
+    height: 2.4em;
+    color: #fff;
+    padding-left: 1em;
+    border-radius: 1em;
+    background-color: transparent;
+  }
+
+  svg {
+    position: absolute;
+    top: 1em;
+  }
+`
+
 export const NavWrapper = styled.section`
   background-color: #154a39;
   color: #fff;
@@ -58,19 +75,6 @@ export const NavWrapper = styled.section`
   > div {
     max-width: 1080px;
     width: 100%;
-  }
-
-  input,
-  button {
-    background-color: #154a39;
-  }
-
-  input {
-    font-weight: bold;
-  }
-
-  button svg {
-    color: #fff;
   }
 
   @media screen and (min-width: 755px) {
