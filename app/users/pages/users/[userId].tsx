@@ -1,14 +1,21 @@
 import { Suspense } from "react"
 import { DashboardLayout } from "app/layouts/Layout"
-import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { useQuery, useParam, BlitzPage, useMutation } from "blitz"
+
 import getUser from "app/users/queries/getUser"
 import deleteUser from "app/users/mutations/deleteUser"
 import getAccount from "app/accounts/queries/getAccount"
 import PieChart from "app/users/components/Piechart"
-import { Button } from "antd"
+
+import { Row, Col } from "antd"
+import * as styled from "app/users/components/styles"
+
+import CashFlow from "app/users/components/cashflow"
+import TransactionsTable from "app/users/components/transactionsTable"
+import RecentActivities from "app/users/components/recentActivities"
+import BanksList from "app/users/components/banksList"
 
 export const User = () => {
-  const router = useRouter()
   const userId = useParam("userId", "number")
   const [user] = useQuery(getUser, { where: { id: userId } })
   const [deleteUserMutation] = useMutation(deleteUser)
@@ -23,29 +30,44 @@ export const User = () => {
   }))
 
   return (
-    <div>
-      <h1>User {user.id}</h1>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-      <pre>{JSON.stringify(account, null, 2)}</pre>
+    <Row justify="center" style={{ marginTop: "1.2em" }}>
+      <Col xs={0} lg={22}>
+        <Row justify="space-between">
+          <Col xs={24} md={8} lg={6}>
+            <styled.TotalAmountCard bordered={false}>
+              <p>
+                <strong>$10,000</strong>
+                <span> +4% </span>
+              </p>
 
-      <PieChart data={chartData} />
+              <p>
+                <strong>&pound; 8,000</strong>
+                <span> 30 days </span>
+              </p>
+            </styled.TotalAmountCard>
+            <BanksList />
+          </Col>
 
-      <Link href={`/users/${user.id}/edit`}>
-        <a>Edit</a>
-      </Link>
+          <Col xs={24} md={12}>
+            <Row justify="space-between">
+              <Col xs={22} md={11}>
+                <CashFlow />
+              </Col>
 
-      <Button
-        type="primary"
-        onClick={async () => {
-          if (window.confirm("This will be deleted")) {
-            await deleteUserMutation({ where: { id: user.id } })
-            router.push("/users")
-          }
-        }}
-      >
-        Delete
-      </Button>
-    </div>
+              <Col xs={22} md={12}>
+                <RecentActivities />
+              </Col>
+
+              <Col xs={24}>
+                <TransactionsTable />
+              </Col>
+            </Row>
+          </Col>
+
+          <Col xs={24} md={8} lg={5}></Col>
+        </Row>
+      </Col>
+    </Row>
   )
 }
 
