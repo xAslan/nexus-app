@@ -1,11 +1,12 @@
-import { useRouter, Link } from "blitz"
+import { useMutation, useRouter, Link } from "blitz"
 import signup from "app/auth/mutations/signup"
 import { Button, message, Form, Input, Row, Col, Checkbox } from "antd"
 import { MdEmail, MdPerson } from "react-icons/md"
-import * as styled from "app/auth/components/styles"
+import * as styled from "app/components/styles"
 
 const SignupForm = (props) => {
   const router = useRouter()
+  const [signupMutation] = useMutation(signup)
 
   const formItemLayout = {
     wrapperCol: {
@@ -19,7 +20,7 @@ const SignupForm = (props) => {
   const handleSubmit = async (values) => {
     try {
       delete values.agreement
-      await signup({ email: values.email, name: values.name, password: values.password })
+      await signupMutation({ email: values.email, name: values.name, password: values.password })
       router.back()
 
       message.success("User created!")

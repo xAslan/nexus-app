@@ -3,7 +3,7 @@ import { Link } from "blitz"
 import login from "app/auth/mutations/login"
 import { MdEmail, MdLock } from "react-icons/md"
 import { Button, Row, Col, Form, Input, message, Checkbox } from "antd"
-import * as styled from "app/auth/components/styles"
+import * as styled from "app/components/styles"
 
 type LoginFormProps = {
   onSuccess?: () => void
