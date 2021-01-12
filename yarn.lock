@@ -2391,6 +2391,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.11.tgz#fc25a4248a5e8d0837019b1d170146d07334abe0"
   integrity sha512-BJ97wAUuU3NUiUCp44xzUFquQEvnk1wu7q4CMEUYKJWjdkr0YWYDsm4RFtAvxYsNjLsKcrFt6RvK8r+mnzMbEQ==
 
+"@types/node@9.x":
+  version "9.6.61"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-9.6.61.tgz#29f124eddd41c4c74281bd0b455d689109fc2a2d"
+  integrity sha512-/aKAdg5c8n468cYLy2eQrcR5k6chlbNwZNGUj3TboyPa2hcO2QAJcfymlqPzMiRj8B6nYKXjzQz36minFE0RwQ==
+
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@types/normalize-package-data/-/normalize-package-data-2.4.0.tgz#e486d0d97396d79beedd0a6e33f4534ff6b4973e"
@@ -3291,6 +3296,13 @@ axe-core@^4.0.2:
   resolved "https://registry.yarnpkg.com/axe-core/-/axe-core-4.1.1.tgz#70a7855888e287f7add66002211a423937063eaf"
   integrity sha512-5Kgy8Cz6LPC9DJcNb3yjAXTu3XihQgEdnIg50c//zOC/MyLP0Clg+Y8Sh9ZjjnvBrDZU4DgXS9C3T9r4/scGZQ==
 
+axios@0.21.1:
+  version "0.21.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
+  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
+  dependencies:
+    follow-redirects "^1.10.0"
+
 axobject-query@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/axobject-query/-/axobject-query-2.2.0.tgz#943d47e10c0b704aa42275e20edf3722648989be"
@@ -3534,7 +3546,7 @@ blitz@0.25.0:
     pkg-dir "4.2.0"
     resolve-from "5.0.0"
 
-bluebird@^3.5.5:
+bluebird@^3.5.1, bluebird@^3.5.5:
   version "3.7.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.7.2.tgz#9f229c15be272454ffa973ace0dbee79a1b0c36f"
   integrity sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==
@@ -6078,6 +6090,11 @@ folder-hash@3.3.1:
     debug "^4.1.1"
     graceful-fs "~4.2.0"
     minimatch "~3.0.4"
+
+follow-redirects@^1.10.0:
+  version "1.13.1"
+  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.13.1.tgz#5f69b813376cee4fd0474a3aba835df04ab763b7"
+  integrity sha512-SSG5xmZh1mkPGyKzjZP8zLjltIfpW32Y5QpdNJyjcfGxK3qo3NDDkZOZSFiGn1A6SclQxY9GzEwAHQ3dmYRWpg==
 
 for-in@^0.1.3:
   version "0.1.8"
@@ -9792,6 +9809,16 @@ pkg-dir@^3.0.0:
   dependencies:
     find-up "^3.0.0"
 
+plaid@8.1.3:
+  version "8.1.3"
+  resolved "https://registry.yarnpkg.com/plaid/-/plaid-8.1.3.tgz#b437831460eba3640545d29b67a3390664b76d46"
+  integrity sha512-vpuqJYV75w/TwG3W+EDRu9lWdGb4i+bNmLVX5pP5+pT+NZR7ZIqq6ZgPE505oKvIZXQvrEwzGAVHSwRL6AHMlw==
+  dependencies:
+    "@types/node" "9.x"
+    axios "0.21.1"
+    bluebird "^3.5.1"
+    ramda "0.23.x"
+
 platform@1.3.3:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/platform/-/platform-1.3.3.tgz#646c77011899870b6a0903e75e997e8e51da7461"
@@ -10206,6 +10233,11 @@ raf@^3.4.0:
   dependencies:
     performance-now "^2.1.0"
 
+ramda@0.23.x:
+  version "0.23.0"
+  resolved "https://registry.yarnpkg.com/ramda/-/ramda-0.23.0.tgz#ccd13fff73497a93974e3e86327bfd87bd6e8e2b"
+  integrity sha1-zNE//3NJepOXTj6GMnv9h71ujis=
+
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
@@ -10616,6 +10648,14 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-plaid-link@3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-plaid-link/-/react-plaid-link-3.0.0.tgz#c456d6486b5923f920f57e98bbac64ecefaf96bd"
+  integrity sha512-jXL3xYvDOHYQ66cKaWdzU1OcFM6RKW05bbA3CnMcgm6XurKur0n6cWB6JNIn3Z9DDiXiS/UaScnzmGa7GagVKA==
+  dependencies:
+    prop-types "^15.7.2"
+    react-script-hook "1.1.0"
+
 react-query@2.5.12:
   version "2.5.12"
   resolved "https://registry.yarnpkg.com/react-query/-/react-query-2.5.12.tgz#f48be402886b9d95f892d836c2476ee3fdd3e479"
@@ -10647,6 +10687,11 @@ react-resize-detector@^2.3.0:
     lodash.throttle "^4.1.1"
     prop-types "^15.6.0"
     resize-observer-polyfill "^1.5.0"
+
+react-script-hook@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-script-hook/-/react-script-hook-1.1.0.tgz#f88bb74b1c89250d7577e6cd5472f10992190706"
+  integrity sha512-swEdGFIOgG4lfi1gdYzFNV28uKuowzbgEGb8Lwi/yp696BVa6RvvuW4a7FY9mic+SecojVlHMWcllygmAg6EJg==
 
 react-smooth@^1.0.5:
   version "1.0.5"

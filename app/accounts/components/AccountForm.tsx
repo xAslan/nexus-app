@@ -3,6 +3,7 @@ import { useQuery } from "blitz"
 import getInstitution from "app/institutions/queries/getInstitution"
 import getInstitutions from "app/institutions/queries/getInstitutions"
 import { Account, Institution } from "@prisma/client"
+import Link from "./Link"
 
 type AccountFormProps = {
   account: Account | null
@@ -34,8 +35,8 @@ const AccountForm = ({ account, onSubmit }: AccountFormProps) => {
       Account Nickname (optional):
       <input placeholder="My Special Account..." defaultValue={account?.name} />
       <br></br>
-      {institution?.authType == "api" && <ApiForm account={account}></ApiForm>}
-      <button>Submit</button>
+      {institution?.authType === "api" && <ApiForm account={account}></ApiForm>}
+      {institution?.authType === "plaid" && <Link />}
     </form>
   )
 }
