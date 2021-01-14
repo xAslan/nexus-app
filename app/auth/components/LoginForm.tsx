@@ -38,7 +38,7 @@ export const LoginForm = (props: LoginFormProps) => {
         <h2> Login </h2>
       </header>
       <Row type="flex" justify="center">
-        <Col xs={24} lg={18}>
+        <Col xs={23} lg={18}>
           <Form
             name="Login_Form"
             onFinish={handleSubmit}
