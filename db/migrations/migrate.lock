@@ -1,5 +1,3 @@
 # Prisma Migrate lockfile v1
 
-20201201205043-init-db
-20201209153048-first-migration
-20201210080534-unique-holdings-symbol
+20210111165106-initial-migration

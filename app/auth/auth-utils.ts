@@ -37,3 +37,39 @@ export const authenticateUser = async (email: string, password: string) => {
   const { hashedPassword, ...rest } = user
   return rest
 }
+
+//TODO: This should only run after email verification
+export const resetPassword = async ({ email, password }) => {
+  const user = await db.user.findUnique({ where: { email } })
+
+  const hashedPassword = await hashPassword(password)
+  await db.user.update({ where: { id: user.id }, data: { hashedPassword } })
+
+  delete user.hashedPassword
+  return user as Omit<User, "hashedPassword">
+}
+
+export const updatePassword = async (
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+) => {
+  const user = await db.user.findUnique({ where: { id: userId } })
+
+  switch (await verifyPassword(user.hashedPassword, currentPassword)) {
+    case SecurePassword.VALID:
+      const newHashedPassword = await hashPassword(newPassword)
+      await db.user.update({ where: { id: user.id }, data: { hashedPassword: newHashedPassword } })
+      break
+    case SecurePassword.VALID_NEEDS_REHASH:
+      // Upgrade hashed password with a newly created hashed password
+      const newPasswordHash = await hashPassword(newPassword)
+      await db.user.update({ where: { id: user.id }, data: { hashedPassword: newPasswordHash } })
+      break
+    default:
+      throw new Error("Could not change password, Try again.")
+  }
+
+  delete user.hashedPassword
+  return user as Omit<User, "hashedPassword">
+}
