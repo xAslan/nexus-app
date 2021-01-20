@@ -57,8 +57,8 @@ model Account {
   plaidToken  String?      
   institution Institution? 
   type        AccountType       //manual, blockchain_wallet, institution, defi ENUM
-  wallets     Wallet[]     
-  holdings    Holding[]    
+  wallet      Wallet?
+  subAccounts SubAccount[]    
   user        User         @relation(fields: [userId], references: [id])
   userId      Int          
   lastSync    DateTime?
@@ -70,40 +70,61 @@ model Wallet {
   id        Int       @default(autoincrement()) @id
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  type      String   // multi coin / single coin
   symbol    String    
   xpub      String?   
-  addresses Address[] 
+  address   Address?  @relation(fields: [addressId], references: [id])
+  addressId Int?
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int       
+}
+
+model SubAccount {
+  id        Int       @default(autoincrement()) @id
+  clientAccountId  String?  // the clients account number
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  name      String
+  holdings  Holding[]
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId Int
 }
 
 model Address {
   id        Int      @default(autoincrement()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String?  
-  address   String   
+  address   String
+  symbol    String
+  wallet    Wallet?
 }
 
 model Holding {
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   
-  symbol    String   @unique
-  wallet    Wallet?
-  amount    Float      
-  account   Account  @relation(fields: [accountId], references: [id])
-  accountId Int 
-  @@id([symbol, accountId])
+  symbol    Symbol  @relation(fields: [symbolId], references: [id])
+  symbolId  Int
+  amount    Float
+  subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
+  subAccountId Int 
+  @@id([symbolId, subAccountId])
+}
+
+model Symbol {
+  id        Int      @default(autoincrement()) @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String   
+  symbol    String
+  address   String?
+  @@unique([symbol, address])
 }
 
 enum AccountType {
-  BLOCKCHAIN_WALLET      // ?
+  BLOCKCHAIN_WALLET      // Zabo
   TRADITIONAL_BANK       // Plaid
   TRADITIONAL_BROKERAGE  // Plaid
   TRADITIONAL_CREDIT     // Plaid
-  CRYPTO_EXCHANGE        // ccxt
-  CRYPTO_SERVICE         // api
+  CRYPTO_EXCHANGE        // Zabo
+  CRYPTO_SERVICE         // Zabo
 }
