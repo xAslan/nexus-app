@@ -101,22 +101,21 @@ model Address {
 model Holding {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String   
-  symbol    Symbol  @relation(fields: [symbolId], references: [id])
-  symbolId  Int
+  asset    Asset  @relation(fields: [assetId], references: [id])
+  assetId  Int
   amount    Float
   subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
   subAccountId Int 
-  @@id([symbolId, subAccountId])
+  @@id([assetId, subAccountId])
 }
 
-model Symbol {
+model Asset {
   id        Int      @default(autoincrement()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   
   symbol    String
-  address   String?
+  address   String  @default("0")
   @@unique([symbol, address])
 }
 

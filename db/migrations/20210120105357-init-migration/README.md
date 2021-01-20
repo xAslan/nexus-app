@@ -1,6 +1,6 @@
-# Migration `20210120103401-init-migration`
+# Migration `20210120105357-init-migration`
 
-This migration has been generated at 1/20/2021, 10:34:01 AM.
+This migration has been generated at 1/20/2021, 10:53:57 AM.
 You can check out the [state of the schema](./schema.prisma) after the migration.
 
 ## Database Steps
@@ -101,21 +101,20 @@ CREATE TABLE "Address" (
 CREATE TABLE "Holding" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "name" TEXT NOT NULL,
-    "symbolId" INTEGER NOT NULL,
+    "assetId" INTEGER NOT NULL,
     "amount" DECIMAL(65,30) NOT NULL,
     "subAccountId" INTEGER NOT NULL,
 
-    PRIMARY KEY ("symbolId","subAccountId")
+    PRIMARY KEY ("assetId","subAccountId")
 )
 
-CREATE TABLE "Symbol" (
+CREATE TABLE "Asset" (
 "id" SERIAL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
     "symbol" TEXT NOT NULL,
-    "address" TEXT,
+    "address" TEXT NOT NULL DEFAULT E'0',
 
     PRIMARY KEY ("id")
 )
@@ -130,7 +129,7 @@ CREATE UNIQUE INDEX "Wallet_addressId_unique" ON "Wallet"("addressId")
 
 CREATE UNIQUE INDEX "Wallet_accountId_unique" ON "Wallet"("accountId")
 
-CREATE UNIQUE INDEX "Symbol.symbol_address_unique" ON "Symbol"("symbol", "address")
+CREATE UNIQUE INDEX "Asset.symbol_address_unique" ON "Asset"("symbol", "address")
 
 ALTER TABLE "Session" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE
 
@@ -144,7 +143,7 @@ ALTER TABLE "Wallet" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON D
 
 ALTER TABLE "SubAccount" ADD FOREIGN KEY("accountId")REFERENCES "Account"("id") ON DELETE CASCADE ON UPDATE CASCADE
 
-ALTER TABLE "Holding" ADD FOREIGN KEY("symbolId")REFERENCES "Symbol"("id") ON DELETE CASCADE ON UPDATE CASCADE
+ALTER TABLE "Holding" ADD FOREIGN KEY("assetId")REFERENCES "Asset"("id") ON DELETE CASCADE ON UPDATE CASCADE
 
 ALTER TABLE "Holding" ADD FOREIGN KEY("subAccountId")REFERENCES "SubAccount"("id") ON DELETE CASCADE ON UPDATE CASCADE
 ```
@@ -153,10 +152,10 @@ ALTER TABLE "Holding" ADD FOREIGN KEY("subAccountId")REFERENCES "SubAccount"("id
 
 ```diff
 diff --git schema.prisma schema.prisma
-migration ..20210120103401-init-migration
+migration ..20210120105357-init-migration
 --- datamodel.dml
 +++ datamodel.dml
-@@ -1,0 +1,130 @@
+@@ -1,0 +1,129 @@
 +// This is your Prisma schema file,
 +// learn more about it in the docs: https://pris.ly/d/prisma-schema
 +
@@ -260,22 +259,21 @@ migration ..20210120103401-init-migration
 +model Holding {
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
-+  name      String   
-+  symbol    Symbol  @relation(fields: [symbolId], references: [id])
-+  symbolId  Int
++  asset    Asset  @relation(fields: [assetId], references: [id])
++  assetId  Int
 +  amount    Float
 +  subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
 +  subAccountId Int 
-+  @@id([symbolId, subAccountId])
++  @@id([assetId, subAccountId])
 +}
 +
-+model Symbol {
++model Asset {
 +  id        Int      @default(autoincrement()) @id
 +  createdAt DateTime @default(now())
 +  updatedAt DateTime @updatedAt
 +  name      String   
 +  symbol    String
-+  address   String?
++  address   String  @default("0")
 +  @@unique([symbol, address])
 +}
 +
