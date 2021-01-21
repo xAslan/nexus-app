@@ -41,10 +41,10 @@ model Institution {
   id        Int      @default(autoincrement()) @id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  name      String   @unique // display name
+  name      String   // display name
   authType  String   @default("none")
-  shortName String   // shortcode for institution make into enum and save in DB
-  type      String   @default("unknown") // traditional, brokerage, bank, crypto_exchange, etc. make this into an ENUM and save in DB
+  shortName String   @unique // shortcode for institution make into enum and save in DB
+  type      AccountType   @default(UNKNOWN) // traditional, brokerage, bank, crypto_exchange, etc. make this into an ENUM and save in DB
 }
 
 model Account {
@@ -72,8 +72,7 @@ model Wallet {
   updatedAt DateTime  @updatedAt
   symbol    String    
   xpub      String?   
-  address   Address?  @relation(fields: [addressId], references: [id])
-  addressId Int?
+  address   String?
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int       
 }
@@ -87,15 +86,6 @@ model SubAccount {
   holdings  Holding[]
   account   Account   @relation(fields: [accountId], references: [id])
   accountId Int
-}
-
-model Address {
-  id        Int      @default(autoincrement()) @id
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  address   String
-  symbol    String
-  wallet    Wallet?
 }
 
 model Holding {
@@ -126,4 +116,5 @@ enum AccountType {
   TRADITIONAL_CREDIT     // Plaid
   CRYPTO_EXCHANGE        // Zabo
   CRYPTO_SERVICE         // Zabo
+  UNKNOWN
 }
