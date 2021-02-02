@@ -4,7 +4,6 @@ export const FormWrapper = styled.section`
   max-width: 480px;
   margin: auto;
   margin-top: 2em;
-  padding: 0 1em;
   box-shadow: 0px 3px 5px 0px rgba(50, 50, 50, 0.25);
 
   main {

@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -62,7 +62,7 @@ model Account {
   subAccounts     SubAccount[]    
   user            User          @relation(fields: [userId], references: [id])
   userId          Int          
-  zaboAccountId   String?
+  zaboAccountId   String?       @unique
   lastSync        DateTime?
   lastSyncEnd     DateTime?
   syncStatus      String        @default("inactive")
