@@ -19,8 +19,8 @@ export const AccountsList = () => {
   })
   const [createAccountMutation] = useMutation(createAccount)
 
-  /* const goToPreviousPage = () => router.push({ query: { page: page - 1 } }) */
-  /* const goToNextPage = () => router.push({ query: { page: page + 1 } }) */
+  const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
+  const goToNextPage = () => router.push({ query: { page: page + 1 } })
 
   const connectWithZabo = async () => {
     const zabo = await Zabo.init({

@@ -9,7 +9,7 @@ import { accountTypes } from "app/accounts/components/accountTypes"
 import * as styled from "app/accounts/components/styles"
 
 const AccTypeForms = () => {
-  /* const router = useRouter() */
+  const router = useRouter()
   const [createAccountMutation] = useMutation(createAccount)
   const [user] = useQuery(getCurrentUser, null)
 

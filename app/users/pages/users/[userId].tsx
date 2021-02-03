@@ -21,13 +21,8 @@ export const User = () => {
   const [deleteUserMutation] = useMutation(deleteUser)
   const [account] = useQuery(getAccount, {
     where: { userId: user.id },
-    include: { holdings: true },
+    include: { subAccounts: true },
   })
-  const { holdings } = account
-  const chartData = holdings.map(({ amount, symbol }) => ({
-    value: amount,
-    name: symbol,
-  }))
 
   return (
     <Row justify="center" style={{ marginTop: "1.2em" }}>

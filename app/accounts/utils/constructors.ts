@@ -32,25 +32,13 @@ export function accountObjConstructor(
   zaboObj,
   ctx,
   currentBalance,
-  accountIdx = 0,
   accountType
 ): CreateAccountInput {
-  console.log("Zabo user")
-  console.log(zaboObj)
-
-  console.log("Zabo user ID")
-  console.log(
-    zaboObj.accounts[zaboObj.accounts.length < 0 ? accountIdx : zaboObj.accounts.length - 1]["id"]
-  )
-
   return {
     name: data.provider.display_name,
     type: accountType,
     zaboToken: data?.token!,
-    zaboAccountId:
-      zaboObj.accounts[zaboObj.accounts.length < 0 ? accountIdx : zaboObj.accounts.length - 1][
-        "id"
-      ],
+    zaboAccountId: zaboObj.id,
     wallet: {
       create: {
         symbol: currentBalance.currency,
