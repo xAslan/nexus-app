@@ -12,7 +12,7 @@ export default async function zaboInit() {
 
 export const zaboClientInit = async () => {
   return await Zabo.init({
-    clientId: "Wj0YWr73LWUB9XTgQaC5N1r4VNoA9KZIy7V7HTFEs6L4iLFP3EUIzrHxXdbKydyM",
+    clientId: process.env.NEXT_PUBLIC_ZABO_CLIENT_ID,
     env: "sandbox",
   })
 }

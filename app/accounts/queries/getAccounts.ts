@@ -1,16 +1,20 @@
 import { Ctx } from "blitz"
 import db, { Prisma } from "db"
 
-type GetAccountsInput = Pick<Prisma.FindManyAccountArgs, "where" | "orderBy" | "skip" | "take">
+type GetAccountsInput = Pick<
+  Prisma.FindManyAccountArgs,
+  "include" | "where" | "orderBy" | "skip" | "take"
+>
 
 export default async function getAccounts(
-  { where, orderBy, skip = 0, take }: GetAccountsInput,
+  { include, where, orderBy, skip = 0, take }: GetAccountsInput,
   ctx: Ctx
 ) {
   ctx.session.authorize()
 
   const accounts = await db.account.findMany({
     where,
+    include,
     orderBy,
     take,
     skip,
