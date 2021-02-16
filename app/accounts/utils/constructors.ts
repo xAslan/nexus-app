@@ -3,11 +3,12 @@ import { Prisma } from "db"
 export type CreateHoldingInput = Pick<Prisma.HoldingCreateArgs, "data">
 export type CreateAccountInput = Pick<Prisma.AccountCreateArgs, "data">
 
-export function holdingsConstructor(data, currentBalance): CreateHoldingInput {
+export function holdingsConstructor(data, currentBalance, fiatBalance = 0): CreateHoldingInput {
   return {
     holdings: {
       create: {
         amount: Number.parseFloat(currentBalance.balance),
+        fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
         asset: {
           connectOrCreate: {
             where: {
@@ -50,6 +51,7 @@ export function accountObjConstructor(
         holdings: {
           create: {
             amount: Number.parseFloat(currentBalance.balance),
+            fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
             asset: {
               connectOrCreate: {
                 where: {

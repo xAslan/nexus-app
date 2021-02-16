@@ -3,7 +3,7 @@
 
 datasource db {
   provider = "postgres"
-  url      = env("DATABASE_URL")
+  url = "***"
 }
 
 generator client {
@@ -94,10 +94,10 @@ model SubAccount {
 model Holding {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  asset         Asset   @relation(fields: [assetId], references: [id])
+  asset         Asset  @relation(fields: [assetId], references: [id])
   assetId       Int
   amount        Float
-  fiatAmount    Float   @default(0)
+  fiatAmount    Float
   subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
   subAccountId  Int 
   @@id([assetId, subAccountId])

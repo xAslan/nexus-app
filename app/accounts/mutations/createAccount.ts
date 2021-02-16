@@ -7,6 +7,7 @@ import {
 import db from "db"
 import { compareArrayObjects } from "utils/utils"
 import inspect from "object-inspect"
+import { toFiat } from "app/accounts/utils/exchange"
 
 //- TODO: invention of control
 //- Generate everything and make the saving logic here not in another file.
@@ -32,6 +33,9 @@ export default async function createAccount({ data }, ctx: Ctx) {
   const comparedObjs = compareArrayObjects(zaboUser, zaboUserObj)
   console.log("Compared OBjcts")
   console.log(comparedObjs)
+
+  //- Expecting to return {...all stuff, fiatAmount}
+  toFiat(accountData.balances, "USD")
 
   if (data.balances.length > 1) {
     const { account } = await createMultipleHoldingsAccount(
