@@ -1,9 +1,8 @@
 import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { useMutation, useSession, usePaginatedQuery, useRouter, BlitzPage } from "blitz"
+import { useMutation, useSession, usePaginatedQuery, useQuery, useRouter, BlitzPage } from "blitz"
 import getAccounts from "app/accounts/queries/getAccounts"
 import { Spin, Button, Affix, Row, Col } from "antd"
-import Zabo from "zabo-sdk-js"
 import createAccount from "app/accounts/mutations/createAccount"
 import AccountsView from "app/accounts/components/accountsView"
 import { FaPlus } from "react-icons/fa"
@@ -20,7 +19,11 @@ export const AccountsList = () => {
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
   })
+
   const [createAccountMutation] = useMutation(createAccount)
+
+  console.log("Account Aggregates")
+  console.log(accountAgg)
 
   const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
   const goToNextPage = () => router.push({ query: { page: page + 1 } })

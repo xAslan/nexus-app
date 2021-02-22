@@ -4,7 +4,7 @@ import db from "db"
 // type GetAccountInput = Pick<FindFirstAccountArgs, "where" | "include">
 
 export default async function getAccountAgg({ where, include }) {
-  ctx.session.authorize()
+  ctx.session.$authorize()
 
   const account = await db.account.findFirst({ where, include })
 

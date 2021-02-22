@@ -13,7 +13,7 @@ import { toFiat } from "app/accounts/utils/exchange"
 //- Generate everything and make the saving logic here not in another file.
 
 export default async function createAccount({ data }, ctx: Ctx) {
-  ctx.session.authorize()
+  ctx.session.$authorize()
 
   const zabo = await zaboInit()
 
