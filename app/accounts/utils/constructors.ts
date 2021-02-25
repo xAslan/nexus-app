@@ -3,23 +3,25 @@ import { Prisma } from "db"
 export type CreateHoldingInput = Pick<Prisma.HoldingCreateArgs, "data">
 export type CreateAccountInput = Pick<Prisma.AccountCreateArgs, "data">
 
-export function holdingsConstructor(data, currentBalance, fiatBalance = 0): CreateHoldingInput {
+export function holdingsConstructor(data, currentBalance): CreateHoldingInput {
+  console.log("Current balance object holdings")
+  console.log(currentBalance)
   return {
     holdings: {
       create: {
-        amount: Number.parseFloat(currentBalance.balance),
+        amount: Number.parseFloat(currentBalance.amount),
         fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
         asset: {
           connectOrCreate: {
             where: {
               symbolAddress: {
-                symbol: currentBalance.currency,
+                symbol: currentBalance.ticker,
                 address: "0",
               },
             },
             create: {
-              symbol: currentBalance.currency,
-              name: currentBalance.provider_currency,
+              symbol: currentBalance.ticker,
+              name: currentBalance.provider_ticker,
             },
           },
         },
@@ -42,7 +44,7 @@ export function accountObjConstructor(
     zaboAccountId: zaboObj.id,
     wallet: {
       create: {
-        symbol: currentBalance.currency,
+        symbol: currentBalance.ticker,
       },
     },
     subAccounts: {
@@ -50,18 +52,18 @@ export function accountObjConstructor(
         name: data.provider.display_name,
         holdings: {
           create: {
-            amount: Number.parseFloat(currentBalance.balance),
+            amount: Number.parseFloat(currentBalance.amount),
             fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
             asset: {
               connectOrCreate: {
                 where: {
                   symbolAddress: {
-                    symbol: currentBalance.currency,
+                    symbol: currentBalance.ticker,
                     address: "0",
                   },
                 },
                 create: {
-                  symbol: currentBalance.currency,
+                  symbol: currentBalance.ticker,
                   name: data.provider.name,
                 },
               },

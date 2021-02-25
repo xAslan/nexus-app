@@ -22,8 +22,7 @@ export const AccountsList = () => {
 
   const [createAccountMutation] = useMutation(createAccount)
 
-  console.log("Account Aggregates")
-  console.log(accountAgg)
+  console.log(accounts)
 
   const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
   const goToNextPage = () => router.push({ query: { page: page + 1 } })

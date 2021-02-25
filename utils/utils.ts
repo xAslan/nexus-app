@@ -2,8 +2,8 @@ export const wait = (timeToDelay) => new Promise((resolve) => setTimeout(resolve
 
 export const compareArrayObjects = (objectTwo, objectOne) => {
   if (objectTwo !== null) {
-    return objectOne.accounts.filter((objOne) => {
-      return !objectTwo.accounts.some((objTwo) => {
+    return objectOne?.accounts.filter((objOne) => {
+      return !objectTwo?.accounts.some((objTwo) => {
         return objOne.id === objTwo.id
       })
     })[0]

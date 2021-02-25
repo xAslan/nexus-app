@@ -3,6 +3,9 @@ import { accountObjConstructor, holdingsConstructor } from "app/accounts/utils/c
 
 export const createMultipleHoldingsAccount = async (data, zaboObj, ctx, accountType) => {
   return await data.balances.reduce(async (acc, currentBalance, idx) => {
+    console.log("Current balance data object")
+    console.log(currentBalance)
+
     if (idx === 0) {
       const accountData = accountObjConstructor(data, zaboObj, ctx, currentBalance, accountType)
       const account = await db.account.create({
