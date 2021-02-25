@@ -1,3 +1,16 @@
 # Prisma Migrate lockfile v1
 
-20210111165106-initial-migration
+20210122132707-initial-migration-after-schema-update
+20210126091224-added-institution-url
+20210127145632-zabo-addition
+20210127163434-removing-zabo
+20210127181419-removed-compound-address-symbol-unique
+20210127181529
+20210128044359-zabo-user-object
+20210131140119-returned-symbol-address
+20210201000423-added-symbol-name
+20210201210340-zabo-token
+20210201224127-removing-unique-zabo-account-id
+20210202100114-unique-zabo-account-id-returned
+20210211084501-add-currency-and-fiat
+20210211084803-added-default-fiat-val

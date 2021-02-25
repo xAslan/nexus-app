@@ -10,7 +10,8 @@
         "TRADITIONAL_BROKERAGE",
         "TRADITIONAL_CREDIT",
         "CRYPTO_EXCHANGE",
-        "CRYPTO_SERVICE"
+        "CRYPTO_SERVICE",
+        "UNKNOWN"
       ]
     },
     {
@@ -511,17 +512,6 @@
       "arity": "Required"
     },
     {
-      "tag": "CreateDirective",
-      "location": {
-        "path": {
-          "tag": "Field",
-          "model": "Institution",
-          "field": "name"
-        },
-        "directive": "unique"
-      }
-    },
-    {
       "tag": "CreateField",
       "model": "Institution",
       "field": "authType",
@@ -561,10 +551,21 @@
       "arity": "Required"
     },
     {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Institution",
+          "field": "shortName"
+        },
+        "directive": "unique"
+      }
+    },
+    {
       "tag": "CreateField",
       "model": "Institution",
       "field": "type",
-      "type": "String",
+      "type": "AccountType",
       "arity": "Required"
     },
     {
@@ -590,7 +591,7 @@
         "directive": "default"
       },
       "argument": "",
-      "value": "\"unknown\""
+      "value": "UNKNOWN"
     },
     {
       "tag": "CreateModel",
@@ -734,15 +735,15 @@
     {
       "tag": "CreateField",
       "model": "Account",
-      "field": "wallets",
+      "field": "wallet",
       "type": "Wallet",
-      "arity": "List"
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
       "model": "Account",
-      "field": "holdings",
-      "type": "Holding",
+      "field": "subAccounts",
+      "type": "SubAccount",
       "arity": "List"
     },
     {
@@ -944,13 +945,6 @@
     {
       "tag": "CreateField",
       "model": "Wallet",
-      "field": "type",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Wallet",
       "field": "symbol",
       "type": "String",
       "arity": "Required"
@@ -965,9 +959,9 @@
     {
       "tag": "CreateField",
       "model": "Wallet",
-      "field": "addresses",
-      "type": "Address",
-      "arity": "List"
+      "field": "address",
+      "type": "String",
+      "arity": "Optional"
     },
     {
       "tag": "CreateField",
@@ -1024,11 +1018,11 @@
     },
     {
       "tag": "CreateModel",
-      "model": "Address"
+      "model": "SubAccount"
     },
     {
       "tag": "CreateField",
-      "model": "Address",
+      "model": "SubAccount",
       "field": "id",
       "type": "Int",
       "arity": "Required"
@@ -1038,7 +1032,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "id"
         },
         "directive": "default"
@@ -1050,7 +1044,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "id"
         },
         "directive": "default"
@@ -1063,7 +1057,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "id"
         },
         "directive": "id"
@@ -1071,7 +1065,14 @@
     },
     {
       "tag": "CreateField",
-      "model": "Address",
+      "model": "SubAccount",
+      "field": "clientAccountId",
+      "type": "String",
+      "arity": "Optional"
+    },
+    {
+      "tag": "CreateField",
+      "model": "SubAccount",
       "field": "createdAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1081,7 +1082,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1093,7 +1094,7 @@
         "tag": "Directive",
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "createdAt"
         },
         "directive": "default"
@@ -1103,7 +1104,7 @@
     },
     {
       "tag": "CreateField",
-      "model": "Address",
+      "model": "SubAccount",
       "field": "updatedAt",
       "type": "DateTime",
       "arity": "Required"
@@ -1113,7 +1114,7 @@
       "location": {
         "path": {
           "tag": "Field",
-          "model": "Address",
+          "model": "SubAccount",
           "field": "updatedAt"
         },
         "directive": "updatedAt"
@@ -1121,16 +1122,69 @@
     },
     {
       "tag": "CreateField",
-      "model": "Address",
+      "model": "SubAccount",
       "field": "name",
       "type": "String",
-      "arity": "Optional"
+      "arity": "Required"
     },
     {
       "tag": "CreateField",
-      "model": "Address",
-      "field": "address",
-      "type": "String",
+      "model": "SubAccount",
+      "field": "holdings",
+      "type": "Holding",
+      "arity": "List"
+    },
+    {
+      "tag": "CreateField",
+      "model": "SubAccount",
+      "field": "account",
+      "type": "Account",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "SubAccount",
+          "field": "account"
+        },
+        "directive": "relation"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "SubAccount",
+          "field": "account"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[accountId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "SubAccount",
+          "field": "account"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
+    },
+    {
+      "tag": "CreateField",
+      "model": "SubAccount",
+      "field": "accountId",
+      "type": "Int",
       "arity": "Required"
     },
     {
@@ -1190,15 +1244,8 @@
     {
       "tag": "CreateField",
       "model": "Holding",
-      "field": "name",
-      "type": "String",
-      "arity": "Required"
-    },
-    {
-      "tag": "CreateField",
-      "model": "Holding",
-      "field": "symbol",
-      "type": "String",
+      "field": "asset",
+      "type": "Asset",
       "arity": "Required"
     },
     {
@@ -1207,17 +1254,45 @@
         "path": {
           "tag": "Field",
           "model": "Holding",
-          "field": "symbol"
+          "field": "asset"
         },
-        "directive": "unique"
+        "directive": "relation"
       }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Holding",
+          "field": "asset"
+        },
+        "directive": "relation"
+      },
+      "argument": "fields",
+      "value": "[assetId]"
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Holding",
+          "field": "asset"
+        },
+        "directive": "relation"
+      },
+      "argument": "references",
+      "value": "[id]"
     },
     {
       "tag": "CreateField",
       "model": "Holding",
-      "field": "wallet",
-      "type": "Wallet",
-      "arity": "Optional"
+      "field": "assetId",
+      "type": "Int",
+      "arity": "Required"
     },
     {
       "tag": "CreateField",
@@ -1229,8 +1304,8 @@
     {
       "tag": "CreateField",
       "model": "Holding",
-      "field": "account",
-      "type": "Account",
+      "field": "subAccount",
+      "type": "SubAccount",
       "arity": "Required"
     },
     {
@@ -1239,7 +1314,7 @@
         "path": {
           "tag": "Field",
           "model": "Holding",
-          "field": "account"
+          "field": "subAccount"
         },
         "directive": "relation"
       }
@@ -1251,12 +1326,12 @@
         "path": {
           "tag": "Field",
           "model": "Holding",
-          "field": "account"
+          "field": "subAccount"
         },
         "directive": "relation"
       },
       "argument": "fields",
-      "value": "[accountId]"
+      "value": "[subAccountId]"
     },
     {
       "tag": "CreateArgument",
@@ -1265,7 +1340,7 @@
         "path": {
           "tag": "Field",
           "model": "Holding",
-          "field": "account"
+          "field": "subAccount"
         },
         "directive": "relation"
       },
@@ -1275,7 +1350,7 @@
     {
       "tag": "CreateField",
       "model": "Holding",
-      "field": "accountId",
+      "field": "subAccountId",
       "type": "Int",
       "arity": "Required"
     },
@@ -1300,7 +1375,166 @@
         "directive": "id"
       },
       "argument": "",
-      "value": "[symbol, accountId]"
+      "value": "[assetId, subAccountId]"
+    },
+    {
+      "tag": "CreateModel",
+      "model": "Asset"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "id",
+      "type": "Int",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "id"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "id"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "autoincrement()"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "id"
+        },
+        "directive": "id"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "createdAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "createdAt"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "now()"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "updatedAt",
+      "type": "DateTime",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "updatedAt"
+        },
+        "directive": "updatedAt"
+      }
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "name",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "symbol",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateField",
+      "model": "Asset",
+      "field": "address",
+      "type": "String",
+      "arity": "Required"
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "address"
+        },
+        "directive": "default"
+      }
+    },
+    {
+      "tag": "CreateArgument",
+      "location": {
+        "tag": "Directive",
+        "path": {
+          "tag": "Field",
+          "model": "Asset",
+          "field": "address"
+        },
+        "directive": "default"
+      },
+      "argument": "",
+      "value": "\"0\""
+    },
+    {
+      "tag": "CreateDirective",
+      "location": {
+        "path": {
+          "tag": "Model",
+          "model": "Asset",
+          "arguments": [
+            {
+              "name": "",
+              "value": "[symbol, address]"
+            }
+          ]
+        },
+        "directive": "unique"
+      }
     }
   ]
 }

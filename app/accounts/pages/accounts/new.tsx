@@ -1,49 +1,70 @@
+import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { Link, useRouter, useMutation, BlitzPage, useSession } from "blitz"
+import { useQuery, useRouter, useMutation, BlitzPage } from "blitz"
 import createAccount from "app/accounts/mutations/createAccount"
-import AccountForm from "app/accounts/components/AccountForm"
+import { AccountTypesForm } from "app/accounts/components/linkAccounts"
+import { Spin, message } from "antd"
+import getCurrentUser from "app/users/queries/getCurrentUser"
+import { accountTypes } from "app/accounts/components/accountTypes"
+import * as styled from "app/accounts/components/styles"
 
-const NewAccountPage: BlitzPage = () => {
+const AccTypeForms = () => {
   const router = useRouter()
   const [createAccountMutation] = useMutation(createAccount)
-  const session = useSession()
+  const [user] = useQuery(getCurrentUser, null)
+
+  const handleAccountsTypeForm = async ({ type, account }) => {
+    if (type === "crypto") {
+      if (account.blockchain !== null) {
+        try {
+          const newAccount = await createAccountMutation({
+            data: {
+              ...account,
+              zaboUser: user.zaboUserObj,
+              accountType: accountTypes.BLOCKCHAIN_WALLET,
+            },
+          })
+          message.success("Account Added!")
+          router.push(`/accounts/${newAccount.id}`)
+        } catch (err) {
+          message.error(err.message)
+          console.log(err)
+        }
+      } else {
+        try {
+          const newAccount = await createAccountMutation({
+            data: {
+              ...account,
+              zaboUser: user.zaboUserObj,
+              accountType: accountTypes.CRYPTO_EXCHANGE,
+            },
+          })
+          message.success("Account Added!")
+          router.push(`/accounts/${newAccount.id}`)
+        } catch (err) {
+          message.error(err.message)
+          console.log(err)
+        }
+      } //- CRYPTO if/else
+
+      //- Traditional Banks
+    }
+  }
+
   return (
-    <div>
-      <h1>Create New Account</h1>
-      <AccountForm
-        account={null}
-        onSubmit={async (event) => {
-          const data = {
-            name: event.target[1].value,
-            type: "TRADITIONAL_BANK",
-            apiKey: event.target[2]?.value,
-            apiSecret: event.target[3]?.value,
-            institution: { connect: { id: parseInt(event.target[0].value) } },
-            user: { connect: { id: session.userId } },
-          }
-          console.log("new.tsx", data)
-          try {
-            const account = await createAccountMutation({ data })
-            alert("Success!" + JSON.stringify(account))
-            router.push(`/accounts/${account.id}`)
-          } catch (error) {
-            alert("Error creating account " + JSON.stringify(error, null, 2))
-          }
-        }}
-      />
-      <p>
-        <Link href="/accounts">
-          <a>Accounts</a>
-        </Link>
-      </p>
-    </div>
+    <styled.AccountsPageWrapper>
+      <AccountTypesForm onSuccess={handleAccountsTypeForm} />
+    </styled.AccountsPageWrapper>
   )
 }
 
-/*function getType(subType){
-  if (subType == 'crypto')
-    
-}*/
+const NewAccountPage: BlitzPage = () => {
+  return (
+    <Suspense fallback={<Spin />}>
+      <AccTypeForms />
+    </Suspense>
+  )
+}
 
 NewAccountPage.getLayout = (page) => <Layout title={"Create New Account"}>{page}</Layout>
 

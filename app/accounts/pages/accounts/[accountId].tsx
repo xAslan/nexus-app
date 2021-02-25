@@ -10,10 +10,29 @@ export const Account = () => {
   const accountId = useParam("accountId", "number")
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
-    include: { holdings: true },
   })
   const [deleteAccountMutation] = useMutation(deleteAccount)
   const [syncAccountMutation] = useMutation(syncAccount)
+
+  const handleSync = async () => {
+    const lastSync = new Date()
+    const accountUpdates = {
+      ...account,
+      lastSync,
+      syncStatus: "active",
+    }
+    try {
+      setQueryData(accountUpdates, { refetch: false })
+      console.log("start sync", accountUpdates)
+      const updated = await syncAccountMutation({ accountId: account.id, lastSync })
+      console.log("end sync", updated)
+      setQueryData(updated)
+    } catch (error) {
+      setQueryData(account)
+      console.log(error)
+      alert("Error syncing account " + JSON.stringify(error, null, 2))
+    }
+  }
 
   return (
     <div>
@@ -35,28 +54,7 @@ export const Account = () => {
       >
         Delete
       </button>
-      <button
-        type="button"
-        onClick={async () => {
-          const lastSync = new Date()
-          const accountUpdates = {
-            ...account,
-            lastSync,
-            syncStatus: "active",
-          }
-          try {
-            setQueryData(accountUpdates, { refetch: false })
-            console.log("start sync", accountUpdates)
-            const updated = await syncAccountMutation({ accountId: account.id, lastSync })
-            console.log("end sync", updated)
-            setQueryData(updated)
-          } catch (error) {
-            setQueryData(account)
-            console.log(error)
-            alert("Error syncing account " + JSON.stringify(error, null, 2))
-          }
-        }}
-      >
+      <button type="button" onClick={handleSync}>
         Sync Account
       </button>
     </div>
