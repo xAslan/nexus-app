@@ -2,7 +2,7 @@
   "name": "nexus-app",
   "version": "1.0.0",
   "scripts": {
-    "start": "docker-compose up -d && blitz start",
+    "start": "docker-compose up -d && blitz dev",
     "studio": "blitz db studio",
     "build": "blitz build",
     "lint": "eslint --ignore-path .gitignore --ext .js,.ts,.tsx .",
