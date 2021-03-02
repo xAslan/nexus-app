@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import { Link, BlitzPage, useMutation } from "blitz"
-import Layout from "app/core/layouts/Layout"
+import Layout from "app/layouts/Layout"
 import { useCurrentUser } from "app/core/hooks/useCurrentUser"
 import logout from "app/auth/mutations/logout"
 
@@ -266,6 +266,6 @@ const Home: BlitzPage = () => {
 }
 
 Home.suppressFirstRenderFlicker = true
-Home.getLayout = (page) => <Layout title="Home">{page}</Layout>
+Home.getLayout = (page) => <Layout title="Nexus Finance">{page}</Layout>
 
 export default Home

@@ -28,7 +28,6 @@ const AccTypeForms = () => {
           router.push(`/accounts/${newAccount.id}`)
         } catch (err) {
           message.error(err.message)
-          console.log(err)
         }
       } else {
         try {
@@ -43,7 +42,6 @@ const AccTypeForms = () => {
           router.push(`/accounts/${newAccount.id}`)
         } catch (err) {
           message.error(err.message)
-          console.log(err)
         }
       } //- CRYPTO if/else
 

@@ -1,13 +1,15 @@
 import { Suspense } from "react"
+import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
-import { useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { CenterContent } from "app/components/styles"
 
 import getUser from "app/users/queries/getUser"
 import deleteUser from "app/users/mutations/deleteUser"
 import getAccount from "app/accounts/queries/getAccount"
 import PieChart from "app/users/components/Piechart"
 
-import { Row, Col } from "antd"
+import { Button, Row, Col } from "antd"
 import * as styled from "app/users/components/styles"
 
 import CashFlow from "app/users/components/cashflow"
@@ -66,10 +68,48 @@ export const User = () => {
   )
 }
 
+const ErrorFallbackComponen = ({ error }) => {
+  const router = useRouter()
+
+  console.log(error)
+
+  const renderError = (error) => {
+    if (error.statusCode === 404) {
+      return (
+        <CenterContent>
+          <section>
+            <p> Sorry, you need to have at least one account</p>
+            <Button type="primary" onClick={() => router.push("/accounts/new")}>
+              {" "}
+              Add Account{" "}
+            </Button>
+          </section>
+        </CenterContent>
+      )
+    }
+
+    return (
+      <CenterContent>
+        <section>
+          <p> Sorry, something went wrong, {error.message} </p>
+          <Button type="primary" onClick={() => router.push("/")}>
+            {" "}
+            Go back home{" "}
+          </Button>
+        </section>
+      </CenterContent>
+    )
+  }
+
+  return renderError(error)
+}
+
 const ShowUserPage: BlitzPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <User />
+      <ErrorBoundary FallbackComponent={ErrorFallbackComponen}>
+        <User />
+      </ErrorBoundary>
     </Suspense>
   )
 }

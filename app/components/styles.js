@@ -30,3 +30,10 @@ export const FormWrapper = styled.section`
     margin: 1.2em 0;
   }
 `
+
+export const CenterContent = styled.section`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+`

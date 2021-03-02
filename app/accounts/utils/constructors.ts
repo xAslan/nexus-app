@@ -1,9 +1,6 @@
 import { Prisma } from "db"
 
-export type CreateHoldingInput = Pick<Prisma.HoldingCreateArgs, "data">
-export type CreateAccountInput = Pick<Prisma.AccountCreateArgs, "data">
-
-export function holdingsConstructor(data, currentBalance): CreateHoldingInput {
+export function holdingsConstructor(data, currentBalance) {
   console.log("Current balance object holdings")
   console.log(currentBalance)
   return {
@@ -30,13 +27,7 @@ export function holdingsConstructor(data, currentBalance): CreateHoldingInput {
   }
 }
 
-export function accountObjConstructor(
-  data,
-  zaboObj,
-  ctx,
-  currentBalance,
-  accountType
-): CreateAccountInput {
+export function accountObjConstructor(data, zaboObj, ctx, currentBalance, accountType) {
   return {
     name: data.provider.display_name,
     type: accountType,

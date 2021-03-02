@@ -1,14 +1,12 @@
-import { Ctx, NotFoundError } from "blitz"
-import db from "db"
+import { Ctx } from "blitz"
+import db, { AccountAggregateArgs } from "db"
 
-// type GetAccountInput = Pick<FindFirstAccountArgs, "where" | "include">
+type AccountAggregateInput = Pick<AccountAggregateArgs, "where" | "avg">
 
-export default async function getAccountAgg({ where, include }) {
+export default async function aggregateAccount({ where }: AccountAggregateInput, ctx: Ctx) {
   ctx.session.$authorize()
 
-  const account = await db.account.findFirst({ where, include })
+  const aggregate = await db.account.aggregate({ where })
 
-  if (!account) throw new NotFoundError()
-
-  return account
+  return aggregate
 }
