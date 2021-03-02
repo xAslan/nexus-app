@@ -1,9 +1,8 @@
 import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { useMutation, useSession, usePaginatedQuery, useRouter, BlitzPage } from "blitz"
+import { useMutation, useSession, usePaginatedQuery, useQuery, useRouter, BlitzPage } from "blitz"
 import getAccounts from "app/accounts/queries/getAccounts"
-import { Spin, Button, Affix, Row, Col } from "antd"
-import Zabo from "zabo-sdk-js"
+import { Empty, Spin, Button, Affix, Row, Col } from "antd"
 import createAccount from "app/accounts/mutations/createAccount"
 import AccountsView from "app/accounts/components/accountsView"
 import { FaPlus } from "react-icons/fa"
@@ -12,15 +11,19 @@ const ITEMS_PER_PAGE = 10
 
 export const AccountsList = () => {
   const router = useRouter()
-  const session = useSession()
+  const { userId } = useSession()
   const page = Number(router.query.page) || 0
   const [{ accounts }] = usePaginatedQuery(getAccounts, {
+    where: { userId },
     orderBy: { id: "asc" },
     include: { subAccounts: { include: { holdings: { include: { asset: true } } } } },
     skip: ITEMS_PER_PAGE * page,
     take: ITEMS_PER_PAGE,
   })
+
   const [createAccountMutation] = useMutation(createAccount)
+
+  console.log(accounts)
 
   const goToPreviousPage = () => router.push({ query: { page: page - 1 } })
   const goToNextPage = () => router.push({ query: { page: page + 1 } })
@@ -28,9 +31,7 @@ export const AccountsList = () => {
   return (
     <>
       <Row justify="center">
-        <Col xs={22}>
-          <AccountsView accounts={accounts} />
-        </Col>
+        <Col xs={22}>{accounts.length > 0 ? <AccountsView accounts={accounts} /> : <Empty />}</Col>
       </Row>
       <Row justify="end">
         <Col xs={4}>

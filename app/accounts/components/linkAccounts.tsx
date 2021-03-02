@@ -18,7 +18,11 @@ export const AccountTypesForm = (props) => {
 
     zabo.connect().onConnection((account) => {
       try {
-        props.onSuccess && props.onSuccess({ account, type: "crypto" })
+        if (account.balances.length > 0) {
+          props.onSuccess && props.onSuccess({ account, type: "crypto" })
+        } else {
+          message.info("Mh, There's 0 balance in this wallet, try another one.")
+        }
       } catch (err) {
         console.error(err)
       }

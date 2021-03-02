@@ -1,7 +1,9 @@
-import { useRouter } from "blitz"
+import { useRouter, useQuery } from "blitz"
 import { Collapse, Row, Col, Button } from "antd"
-import { AiFillCaretRight, AiOutlineCaretDown } from "react-icons/ai"
+import { AiFillCaretRight } from "react-icons/ai"
 import { FormWrapper as StyledFormWrapper } from "app/components/styles"
+import getHoldingsAgg from "app/queries/holdingsAggregate"
+import * as styled from "app/accounts/components/styles"
 
 const { Panel } = Collapse
 
@@ -16,17 +18,31 @@ const AccountsView = (props) => {
         <p>
           Amount {holding.asset.symbol} {holding.amount}
         </p>
+
+        <p>Fiat Amount USD {holding.fiatAmount}</p>
       </li>
     ))
   }
 
   const renderPanels = (accounts) => {
     return accounts.map((account, idx) => {
+      //- Using a hook inside a .map function is a bad practise.
+      //const {sum} = useQuery(getHoldingsAgg, {subAccountId: account.subAccounts[0].id})[0]
       return (
-        <Panel key={idx} header={account.name}>
+        <Panel
+          key={idx}
+          header={
+            <styled.PanelHeader>
+              <strong>{account.name}</strong>
+              {/*<span> $ {sum.fiatAmount} </span>*/}
+            </styled.PanelHeader>
+          }
+        >
           <Row justify="start">
             <Col xs={24}>
-              <ul>{renderHoldings(account.subAccounts)}</ul>
+              <styled.PanelBody>
+                <ul>{renderHoldings(account.subAccounts)}</ul>
+              </styled.PanelBody>
             </Col>
           </Row>
 

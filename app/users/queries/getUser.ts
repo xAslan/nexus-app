@@ -4,7 +4,7 @@ import db, { FindFirstUserArgs } from "db"
 type GetUserInput = Pick<FindFirstUserArgs, "where">
 
 export default async function getUser({ where }: GetUserInput, ctx: Ctx) {
-  ctx.session.authorize()
+  ctx.session.$authorize()
 
   const user = await db.user.findFirst({ where })
 

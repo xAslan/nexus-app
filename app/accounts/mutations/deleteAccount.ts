@@ -4,7 +4,7 @@ import db, { AccountDeleteArgs } from "db"
 type DeleteAccountInput = Pick<AccountDeleteArgs, "where">
 
 export default async function deleteAccount({ where }: DeleteAccountInput, ctx: Ctx) {
-  ctx.session.authorize()
+  ctx.session.$authorize()
 
   // TODO: remove once Prisma supports cascading deletes
   await db.wallet.deleteMany({ where: { account: { id: where.id } } })

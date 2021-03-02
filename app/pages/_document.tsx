@@ -1,3 +1,4 @@
+import { Suspense } from "react"
 import { Document, Html, DocumentHead, Main, BlitzScript, DocumentContext } from "blitz"
 import { ServerStyleSheet } from "styled-components"
 
@@ -9,7 +10,11 @@ class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) => sheet.collectStyles(<App {...props} />),
+          enhanceApp: (App) => (props) => sheet.collectStyles(
+            <Suspense fallback={<p> Loading ...</p>}>
+              <App {...props} />
+            </Suspense>
+          ),
         })
 
       const initialProps = await Document.getInitialProps(ctx)

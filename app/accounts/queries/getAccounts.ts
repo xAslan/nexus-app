@@ -10,7 +10,7 @@ export default async function getAccounts(
   { include, where, orderBy, skip = 0, take }: GetAccountsInput,
   ctx: Ctx
 ) {
-  ctx.session.authorize()
+  ctx.session.$authorize()
 
   const accounts = await db.account.findMany({
     where,
