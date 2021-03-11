@@ -1,3 +1,4 @@
+import { Space, Card } from 'antd';
 import { Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
@@ -7,7 +8,6 @@ import { CenterContent } from "app/components/styles"
 import getUser from "app/users/queries/getUser"
 import deleteUser from "app/users/mutations/deleteUser"
 import getAccount from "app/accounts/queries/getAccount"
-import PieChart from "app/users/components/Piechart"
 
 import { Button, Row, Col } from "antd"
 import * as styled from "app/users/components/styles"
@@ -16,6 +16,34 @@ import CashFlow from "app/users/components/cashflow"
 import TransactionsTable from "app/users/components/transactionsTable"
 import RecentActivities from "app/users/components/recentActivities"
 import BanksList from "app/users/components/banksList"
+import PieDoughnutChart from "app/components/PieDoughnutChart"
+import LineChart from "app/components/LineChart"
+
+const cryptoCoin = [
+  {name: 'BTC', amount: 1.4, primaryCurrencyAmount: 1000},
+  {name: 'ETH', amount: 10.3, primaryCurrencyAmount: 1000},
+  {name: 'USDT', amount: 5, primaryCurrencyAmount: 2000},
+  {name: 'XRP', amount: 15, primaryCurrencyAmount: 4000},
+  {name: 'LTC', amount: 0.3, primaryCurrencyAmount: 200},
+  {name: 'LTC', amount: 0.3, primaryCurrencyAmount: 1231},
+];
+
+const valueOfAccount = [
+  {timestamp: 1612869664000, value: 200},
+  {timestamp: 1612626757000, value: 300},
+  {timestamp: 1612540357000, value: 350},
+  {timestamp: 1612194757000, value: 400},
+  {timestamp: 1611589957000, value: 315},
+  {timestamp: 1607594617000, value: 321},
+  {timestamp: 1610985157000, value: 233},
+  {timestamp: 1602342837000, value: 333},
+  {timestamp: 1612977237000, value: 231},
+  {timestamp: 1610380357000, value: 412},
+  {timestamp: 1610121157000, value: 344},
+  {timestamp: 1588949557000, value: 550},
+  {timestamp: 1581177157000, value: 553},
+  {timestamp: 1549641157000, value: 512},
+];
 
 export const User = () => {
   const userId = useParam("userId", "number")
@@ -46,6 +74,9 @@ export const User = () => {
           </Col>
 
           <Col xs={24} md={12}>
+            <Space direction="vertical">
+            <LineChart title="Nexus Finance Line" valueOfAccount={valueOfAccount} />
+
             <Row justify="space-between">
               <Col xs={22} md={11}>
                 <CashFlow />
@@ -59,9 +90,16 @@ export const User = () => {
                 <TransactionsTable />
               </Col>
             </Row>
+            </Space>
           </Col>
 
-          <Col xs={24} md={8} lg={5}></Col>
+          <Col xs={24} md={8} lg={5}>
+            <Space direction="vertical">
+              <PieDoughnutChart title="Nexus Finance Pie" type="Doughnut" cryptoCoin={cryptoCoin} />
+              <PieDoughnutChart title="Nexus Finance Pie" type="Pie" cryptoCoin={cryptoCoin} />
+              <PieDoughnutChart title="Nexus Finance Pie" type="Pie" cryptoCoin={cryptoCoin} />
+            </Space>
+          </Col>
         </Row>
       </Col>
     </Row>

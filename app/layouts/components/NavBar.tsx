@@ -1,10 +1,26 @@
 import { ReactNode, Suspense } from "react"
 import { useMutation, useRouter, useSession, Link } from "blitz"
 import logout from "app/auth/mutations/logout"
-import { Avatar, Button, Row, Col, Input } from "antd"
+import { Avatar, Button, Row, Col, Input, Menu, Dropdown } from "antd"
 import { AiOutlineMenu, AiOutlineUser, AiOutlineSearch } from "react-icons/ai"
 import { WiDaySunny } from "react-icons/wi"
 import * as styled from "app/layouts/components/styles"
+
+const menu = (
+  <Menu>
+    <Menu.Item>
+      <a target="_blank" rel="noopener noreferrer" href="https://www.antgroup.com">
+        Profile Page
+      </a>
+      
+    </Menu.Item>
+    <Menu.Item>
+      <a target="_blank" rel="noopener noreferrer" href="/login">
+        Logout
+      </a>
+    </Menu.Item>
+  </Menu>
+);
 
 export const NavBar = (props) => {
   const session = useSession()
@@ -126,11 +142,10 @@ export const DashboardNavBar = (props) => {
               <Col xs={8} md={0}>
                 <Button icon={<AiOutlineSearch />} ghost />
               </Col>
-              <Col xs={0} md={8}>
-                <p> Username </p>
-              </Col>
-              <Col xs={8}>
-                <Avatar icon={<AiOutlineUser />} />
+              <Col xs={16} md={16}>
+                <Dropdown overlay={menu} placement="topCenter" arrow>
+                  <p> <p>Username</p>  <Avatar icon={<AiOutlineUser />} />  </p>
+                </Dropdown>
               </Col>
               <Col xs={4}>
                 <Button ghost icon={<WiDaySunny size="24px" />} />
