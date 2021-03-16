@@ -19,25 +19,28 @@ model User {
   updatedAt       DateTime      @updatedAt
   name            String?
   email           String        @unique
-  hashedPassword  String?
+  hashedPassword  String?       @map("hashed_password")
   role            String        @default("user")
   sessions        Session[]
-  zaboUserObj     Json?
-  primaryCurrency String        @default("USD")
+  plaidToken      String?       @map("plaid_token")
+  zaboUserObj     Json?         @map("zabo_user_obj")
+  primaryCurrency String        @default("USD") @map("primary_currency")
+  @@map("user")
 }
 
 model Session {
   id                 Int       @default(autoincrement()) @id
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
-  expiresAt          DateTime?
+  expiresAt          DateTime? @map("expires_at")
   handle             String    @unique
   user               User?     @relation(fields: [userId], references: [id])
   userId             Int?
-  hashedSessionToken String?
-  antiCSRFToken      String?
-  publicData         String?
-  privateData        String?
+  hashedSessionToken String?   @map("hashed_session_token")
+  antiCSRFToken      String?   @map("anti_csrf_token")
+  publicData         String?   @map("pulic_data")
+  privateData        String?   @map("private_data")
+  @@map("session")
 }
 
 model Institution {
@@ -45,10 +48,12 @@ model Institution {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   // display name
-  authType  String   @default("none")
-  shortName String   @unique // shortcode for institution make into enum and save in DB
-  logoURL   String?
+  authType  String   @default("none") @map("auth_type")
+  shortName String   @unique @map("short_name") // shortcode for institution make into enum and save in DB
+  logoURL   String?  @map("logo_url")
   type      AccountType   @default(UNKNOWN) // traditional, brokerage, bank, crypto_exchange, etc. make this into an ENUM and save in DB
+
+  @@map("institution")
 }
 
 model Account {
@@ -56,18 +61,20 @@ model Account {
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   name            String        // display name for account
-  zaboToken       String?
-  plaidToken      String?      
+  zaboToken       String?       @map("zabo_token")
+  plaidItemId     String?       @map("plaid_item_id")
   institution     Institution? 
   type            AccountType       //manual, blockchain_wallet, institution, defi ENUM
   wallet          Wallet?
-  subAccounts     SubAccount[]    
+  subAccounts     SubAccount[]  @map("sub_accounts")  
   user            User          @relation(fields: [userId], references: [id])
   userId          Int          
-  zaboAccountId   String?       @unique
-  lastSync        DateTime?
-  lastSyncEnd     DateTime?
-  syncStatus      String        @default("inactive")
+  zaboAccountId   String?       @map("zabo_account_id")
+  lastSync        DateTime?     @map("last_sync")
+  lastSyncEnd     DateTime?     @map("last_sync_end")
+  syncStatus      String        @default("inactive") @map("sync_status")
+  @@unique([zaboAccountId, userId])
+  @@map("account")
 }
 
 model Wallet {
@@ -78,30 +85,33 @@ model Wallet {
   xpub      String?   
   address   String?
   account   Account   @relation(fields: [accountId], references: [id])
-  accountId Int       
+  accountId Int       @map("account_id")
+  @@map("wallet")
 }
 
 model SubAccount {
   id        Int       @default(autoincrement()) @id
-  clientAccountId  String?  // the clients account number
+  clientAccountId  String?  @map("client_account_id") // the clients account number
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   name      String
   holdings  Holding[]
   account   Account   @relation(fields: [accountId], references: [id])
-  accountId Int
+  accountId Int       @map("account_id")
+  @@map("sub_account")
 }
 
 model Holding {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   asset         Asset   @relation(fields: [assetId], references: [id])
-  assetId       Int
+  assetId       Int     @map("asset_id")
   amount        Float
-  fiatAmount    Float   @default(0)
+  fiatAmount    Float   @default(0) @map("fiat_amount")
   subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
-  subAccountId  Int 
+  subAccountId  Int         @map("sub_account_id")
   @@id([assetId, subAccountId])
+  @@map("holding")
 }
 
 //- Removed the compound unique on [address, symbol]
@@ -115,6 +125,7 @@ model Asset {
   symbol    String
   address   String  @default("0")
   @@unique(fields: [symbol, address], name: "symbolAddress")
+  @@map("asset")
 }
 
 enum AccountType {
