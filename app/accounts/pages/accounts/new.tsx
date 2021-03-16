@@ -5,23 +5,25 @@ import createAccount from "app/accounts/mutations/createAccount"
 import { AccountTypesForm } from "app/accounts/components/linkAccounts"
 import { Spin, message } from "antd"
 import getCurrentUser from "app/users/queries/getCurrentUser"
-import { accountTypes } from "app/accounts/components/accountTypes"
+import { accountTypes } from "app/accounts/utils/accountTypes"
 import * as styled from "app/accounts/components/styles"
+import createPlaidAccount from "app/accounts/mutations/createPlaidAccount"
 
 const AccTypeForms = () => {
   const router = useRouter()
   const [createAccountMutation] = useMutation(createAccount)
+  const [createPlaidAccountMutation] = useMutation(createPlaidAccount)
   const [user] = useQuery(getCurrentUser, null)
 
-  const handleAccountsTypeForm = async ({ type, account }) => {
-    if (type === "crypto") {
-      if (account.blockchain !== null) {
+  const handleAccountsTypeForm = async ({ type, account = {}, plaidAccessToken = null }) => {
+    switch (type) {
+      case accountTypes.BLOCKCHAIN_WALLET: {
         try {
           const newAccount = await createAccountMutation({
             data: {
               ...account,
-              zaboUser: user.zaboUserObj,
-              accountType: accountTypes.BLOCKCHAIN_WALLET,
+              zaboUser: user.zaboUserObj!,
+              accountType: type,
             },
           })
           message.success("Account Added!")
@@ -29,23 +31,43 @@ const AccTypeForms = () => {
         } catch (err) {
           message.error(err.message)
         }
-      } else {
-        try {
-          const newAccount = await createAccountMutation({
-            data: {
-              ...account,
-              zaboUser: user.zaboUserObj,
-              accountType: accountTypes.CRYPTO_EXCHANGE,
-            },
-          })
-          message.success("Account Added!")
-          router.push(`/accounts/${newAccount.id}`)
-        } catch (err) {
-          message.error(err.message)
-        }
-      } //- CRYPTO if/else
 
-      //- Traditional Banks
+        break
+      }
+
+      case accountTypes.CRYPTO_EXCHANGE: {
+        try {
+          const newAccount = await createAccountMutation({
+            data: {
+              ...account,
+              zaboUser: user.zaboUserObj!,
+              accountType: type,
+            },
+          })
+          message.success("Account Added!")
+          router.push(`/accounts/${newAccount.id}`)
+        } catch (err) {
+          message.error(err.message)
+        }
+
+        break
+      }
+
+      default: {
+        try {
+          const plaidAccount = await createPlaidAccountMutation({
+            accessToken: plaidAccessToken,
+            accountType: type,
+          })
+
+          message.success("Account Added!")
+          router.push(`/accounts/${plaidAccount.id}`)
+        } catch (err) {
+          message.error(err.message)
+        }
+
+        break
+      }
     }
   }
 

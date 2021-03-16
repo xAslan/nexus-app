@@ -1,14 +1,43 @@
 import { Button, Row, Col, Form, Input, message, Radio } from "antd"
-import { useState } from "react"
-import { useRouter } from "blitz"
+import { useCallback, useState } from "react"
+import { useRouter, useMutation, useQuery } from "blitz"
+import { usePlaidLink } from "react-plaid-link"
 import { FormWrapper as StyledFormWrapper } from "app/components/styles"
 import { AiOutlineGlobal } from "react-icons/ai"
-import { accountTypes } from "app/accounts/components/accountTypes"
+import { accountTypes } from "app/accounts/utils/accountTypes"
+import getPlaidLinkToken from "app/queries/getPlaidLinkToken"
+import setAccessToken from "app/accounts/mutations/setAccessToken"
 import Zabo from "zabo-sdk-js"
 
 export const AccountTypesForm = (props) => {
   const [accountType, setAccounttype] = useState(null)
   const router = useRouter()
+  const [plaidToken] = useQuery(getPlaidLinkToken, {})
+  const [setAccessTokenMutation] = useMutation(setAccessToken)
+
+  const onPlaidSuccess = useCallback(async (token, metadata) => {
+    const plaidAccessToken = await setAccessTokenMutation({ token })
+
+    console.log("ACCESSS")
+    console.log(plaidAccessToken)
+
+    try {
+      ;(await props.onSuccess) &&
+        props.onSuccess({
+          type: accountTypes.TRADITIONAL_BANKS,
+          plaidAccessToken,
+        })
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  const plaidConfig = {
+    token: plaidToken,
+    onSuccess: onPlaidSuccess,
+  }
+
+  const { open, ready, error } = usePlaidLink(plaidConfig)
 
   const connectWithZabo = async () => {
     const zabo = await Zabo.init({
@@ -19,12 +48,15 @@ export const AccountTypesForm = (props) => {
     zabo.connect().onConnection((account) => {
       try {
         if (account.balances.length > 0) {
-          props.onSuccess && props.onSuccess({ account, type: "crypto" })
+          account.blockchain != null
+            ? props.onSuccess && props.onSuccess({ account, type: accountTypes.BLOCKCHAIN_WALLET })
+            : props.onSuccess && props.onSuccess({ account, type: accountTypes.CRYPTO_EXCHANGE })
         } else {
           message.info("Mh, There's 0 balance in this wallet, try another one.")
         }
       } catch (err) {
         console.error(err)
+        message.error("Something went wrong please try again later")
       }
     })
   }
@@ -51,7 +83,7 @@ export const AccountTypesForm = (props) => {
     switch (type) {
       case accountTypes.TRADITIONAL_BANKS: {
         return (
-          <Button block size="large" type="primary">
+          <Button onClick={open} disabled={!ready} block size="large" type="primary">
             <strong>Continue with Plaid</strong>
           </Button>
         )
@@ -114,91 +146,6 @@ export const AccountTypesForm = (props) => {
           </Col>
         </Row>
       </main>
-    </StyledFormWrapper>
-  )
-}
-
-export const AddBankAccount = () => {
-  const handleSubmit = async (values) => {
-    try {
-      console.log(values)
-      message.success("Plaid intergration coming soon ...")
-    } catch (error) {
-      return message.error("Sorry, We have an unexpected Error!")
-    }
-  }
-
-  const handleSubmitError = (error) => {
-    console.log(error)
-    return message.error("Sorry, We have an unexpected Error!")
-  }
-
-  const formItemLayout = {
-    wrapperCol: {
-      xs: { span: 24 },
-    },
-    labelCol: {
-      xs: { span: 24 },
-    },
-  }
-
-  return (
-    <StyledFormWrapper headerFont="1.2em">
-      <header>
-        <h2>Add Bank Account</h2>
-      </header>
-      <Row type="flex" justify="center">
-        <Col xs={24} lg={18} xl={16}>
-          <Form
-            name="Add Bank Account Form"
-            onFinish={handleSubmit}
-            {...formItemLayout}
-            labelAlign="left"
-            onFinishFailed={handleSubmitError}
-          >
-            <Form.Item
-              name="username"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your Bank User name",
-                },
-              ]}
-            >
-              <Input
-                size="large"
-                placeholder="Enter your Bank user name"
-                prefix={<AiOutlineGlobal />}
-              />
-            </Form.Item>
-
-            <Form.Item
-              name="password"
-              rules={[
-                {
-                  required: true,
-                  message: "Please input your bank password",
-                },
-              ]}
-            >
-              <Input.Password size="large" placeholder="Enter your Bank Password" />
-            </Form.Item>
-
-            <Row justify="center">
-              <Col xs={24} lg={20}>
-                <Row justify="space-between">
-                  <Button type="default">
-                    <strong>Back</strong>
-                  </Button>
-                  <Button htmlType="submit" type="primary">
-                    <strong>Submit</strong>
-                  </Button>
-                </Row>
-              </Col>
-            </Row>
-          </Form>
-        </Col>
-      </Row>
     </StyledFormWrapper>
   )
 }
