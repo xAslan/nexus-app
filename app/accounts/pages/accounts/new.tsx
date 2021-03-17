@@ -15,6 +15,15 @@ const AccTypeForms = () => {
   const [createPlaidAccountMutation] = useMutation(createPlaidAccount)
   const [user] = useQuery(getCurrentUser, null)
 
+  const handleSubmitError = (err) => {
+    if (err.code === "P2002") {
+      message.error("Account Already Belongs to User")
+      return
+    }
+
+    message.error(err.message)
+  }
+
   const handleAccountsTypeForm = async ({ type, account = {}, plaidAccessToken = null }) => {
     switch (type) {
       case accountTypes.BLOCKCHAIN_WALLET: {
@@ -29,7 +38,7 @@ const AccTypeForms = () => {
           message.success("Account Added!")
           router.push(`/accounts/${newAccount.id}`)
         } catch (err) {
-          message.error(err.message)
+          handleSubmitError(err)
         }
 
         break
@@ -47,7 +56,7 @@ const AccTypeForms = () => {
           message.success("Account Added!")
           router.push(`/accounts/${newAccount.id}`)
         } catch (err) {
-          message.error(err.message)
+          handleSubmitError(err)
         }
 
         break
