@@ -69,10 +69,11 @@ model Account {
   subAccounts     SubAccount[]
   user            User          @relation(fields: [userId], references: [id])
   userId          Int          
-  zaboAccountId   String?       @unique @map("zabo_account_id")
+  zaboAccountId   String?       @map("zabo_account_id")
   lastSync        DateTime?     @map("last_sync")
   lastSyncEnd     DateTime?     @map("last_sync_end")
   syncStatus      String        @default("inactive") @map("sync_status")
+  @@unique(fields: [zaboAccountId, userId], name: "zaboAccountIdUserId")
   @@map("account")
 }
 

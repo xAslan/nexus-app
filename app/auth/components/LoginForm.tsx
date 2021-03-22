@@ -1,5 +1,5 @@
 import React from "react"
-import { Link } from "blitz"
+import { useMutation, Link } from "blitz"
 import login from "app/auth/mutations/login"
 import { MdEmail, MdLock } from "react-icons/md"
 import { Button, Row, Col, Form, Input, message, Checkbox } from "antd"
@@ -10,9 +10,10 @@ type LoginFormProps = {
 }
 
 export const LoginForm = (props: LoginFormProps) => {
+  const [loginMutation] = useMutation(login)
   const handleSubmit = async (values) => {
     try {
-      await login({ email: values.email, password: values.password })
+      await loginMutation({ email: values.email, password: values.password })
       props.onSuccess && props.onSuccess()
     } catch (error) {
       if (error.name === "AuthenticationError") {
