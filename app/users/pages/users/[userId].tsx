@@ -1,12 +1,11 @@
-import { Suspense } from "react"
+import { useReducer, useEffect, Suspense } from "react"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
-import { useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { invoke, useRouter, useQuery, useParam, BlitzPage } from "blitz"
 import { CenterContent } from "app/components/styles"
 
 import getUser from "app/users/queries/getUser"
-import deleteUser from "app/users/mutations/deleteUser"
-import getAccount from "app/accounts/queries/getAccount"
+import getAccounts from "app/accounts/queries/getAccounts"
 import PieChart from "app/users/components/Piechart"
 
 import { Button, Row, Col } from "antd"
@@ -20,10 +19,12 @@ import BanksList from "app/users/components/banksList"
 export const User = () => {
   const userId = useParam("userId", "number")
   const [user] = useQuery(getUser, { where: { id: userId } })
-  const [deleteUserMutation] = useMutation(deleteUser)
-  const [account] = useQuery(getAccount, {
+  const [{ accounts }] = useQuery(getAccounts, {
     where: { userId: user.id },
-    include: { subAccounts: true },
+    include: {
+      institution: true,
+      subAccounts: { include: { holdings: { include: { asset: true } } } },
+    },
   })
 
   return (
@@ -42,9 +43,8 @@ export const User = () => {
                 <span> 30 days </span>
               </p>
             </styled.TotalAmountCard>
-            <BanksList />
+            <BanksList accounts={accounts} />
           </Col>
-
           <Col xs={24} md={12}>
             <Row justify="space-between">
               <Col xs={22} md={11}>
@@ -68,7 +68,7 @@ export const User = () => {
   )
 }
 
-const ErrorFallbackComponen = ({ error }) => {
+const ErrorFallbackComponent = ({ error }) => {
   const router = useRouter()
 
   console.log(error)
@@ -107,7 +107,7 @@ const ErrorFallbackComponen = ({ error }) => {
 const ShowUserPage: BlitzPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <ErrorBoundary FallbackComponent={ErrorFallbackComponen}>
+      <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
         <User />
       </ErrorBoundary>
     </Suspense>

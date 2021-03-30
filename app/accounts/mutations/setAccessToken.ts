@@ -40,6 +40,10 @@ export default resolver.pipe(
     const userId = ctx.session.userId
     const PUBLIC_TOKEN = input.token
 
+    /*
+     * Returning same token on requests gives same
+     * Bank information for every new request.
+     *
     const userObject = await db.user.findFirst({
       where: {
         id: userId,
@@ -52,6 +56,7 @@ export default resolver.pipe(
     if (userObject.plaidToken != null) {
       return userObject.plaidToken
     }
+    */
 
     try {
       const { access_token } = await getAccessToken(PUBLIC_TOKEN)

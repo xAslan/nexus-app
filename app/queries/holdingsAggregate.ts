@@ -10,30 +10,20 @@ export default resolver.pipe(
   resolver.zod(HoldingsAggregate),
   resolver.authorize(),
   async (input) => {
-    const aggregate = await db.holding.aggregate({
-      sum: {
-        fiatAmount: true,
-      },
+    const aggregate = await db.holding.groupBy({
+      by: ["assetId"],
       where: {
         subAccountId: {
           equals: input.subAccountId,
         },
       },
+      sum: {
+        amount: true,
+      },
     })
 
-    return aggregate
+    const asset = await db.asset.findFirst({ where: { id: aggregate.assetId } })
+
+    return { ...aggregate, ...asset }
   }
 )
-
-/*
-type HoldingAggregateInput = Pick<HoldingAggregateArgs, "where" | "avg">
-
-export default async function aggregateAccount({ where }: AccountAggregateInput, ctx: Ctx) {
-  ctx.session.$authorize()
-
-  const aggregate = await db.account.aggregate({ 
-  })
-
-  return aggregate
-}
-*/
