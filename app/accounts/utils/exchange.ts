@@ -6,9 +6,6 @@ export const toFiat = async (cryptoString, fiatCurrency = "USD") => {
       `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&ids=${cryptoString}&interval=1d&convert=${fiatCurrency}`
     )
 
-    console.log("Data ...")
-    console.log(data)
-
     return data
   } catch (e) {
     console.log("Something went wrong!")

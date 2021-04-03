@@ -15,6 +15,8 @@ import CashFlow from "app/users/components/cashflow"
 import TransactionsTable from "app/users/components/transactionsTable"
 import RecentActivities from "app/users/components/recentActivities"
 import BanksList from "app/users/components/banksList"
+import { AggregateProvider } from "app/users/components/dashboardCtx"
+import TotalAmount from "app/users/components/totalAmount"
 
 export const User = () => {
   const userId = useParam("userId", "number")
@@ -28,43 +30,35 @@ export const User = () => {
   })
 
   return (
-    <Row justify="center" style={{ marginTop: "1.2em" }}>
-      <Col xs={0} lg={22}>
-        <Row justify="space-between">
-          <Col xs={24} md={8} lg={6}>
-            <styled.TotalAmountCard bordered={false}>
-              <p>
-                <strong>$10,000</strong>
-                <span> +4% </span>
-              </p>
+    <AggregateProvider accounts={accounts}>
+      <Row justify="center" style={{ marginTop: "1.2em" }}>
+        <Col xs={0} lg={22}>
+          <Row justify="space-between">
+            <Col xs={24} md={8} lg={6}>
+              <TotalAmount />
+              <BanksList />
+            </Col>
+            <Col xs={24} md={12}>
+              <Row justify="space-between">
+                <Col xs={22} md={11}>
+                  <CashFlow />
+                </Col>
 
-              <p>
-                <strong>&pound; 8,000</strong>
-                <span> 30 days </span>
-              </p>
-            </styled.TotalAmountCard>
-            <BanksList accounts={accounts} />
-          </Col>
-          <Col xs={24} md={12}>
-            <Row justify="space-between">
-              <Col xs={22} md={11}>
-                <CashFlow />
-              </Col>
+                <Col xs={22} md={12}>
+                  <RecentActivities />
+                </Col>
 
-              <Col xs={22} md={12}>
-                <RecentActivities />
-              </Col>
+                <Col xs={24}>
+                  <TransactionsTable />
+                </Col>
+              </Row>
+            </Col>
 
-              <Col xs={24}>
-                <TransactionsTable />
-              </Col>
-            </Row>
-          </Col>
-
-          <Col xs={24} md={8} lg={5}></Col>
-        </Row>
-      </Col>
-    </Row>
+            <Col xs={24} md={8} lg={5}></Col>
+          </Row>
+        </Col>
+      </Row>
+    </AggregateProvider>
   )
 }
 

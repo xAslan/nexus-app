@@ -31,6 +31,8 @@ export const AccountsCard = styled(Card)`
 
   .ant-card-body {
     padding: 1em 0.24em;
+    overflow: scroll;
+    max-height: 38em;
   }
 `
 
