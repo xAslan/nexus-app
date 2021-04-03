@@ -123,9 +123,17 @@ model Asset {
   updatedAt DateTime @updatedAt
   name      String   
   symbol    String
+  assetType AssetType @map("asset_type")
   address   String  @default("0")
   @@unique(fields: [symbol, address], name: "symbolAddress")
   @@map("asset")
+}
+
+enum AssetType {
+  CRYPTO,
+  FIAT,
+  STOCK,
+  OTHER,
 }
 
 enum AccountType {
