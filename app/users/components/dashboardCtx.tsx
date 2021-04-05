@@ -78,7 +78,7 @@ export const AggregateProvider = (props) => {
       if (uniqueAmountsArray.length > 0) {
         const symbolsArray = _.flatMap(uniqueAmountsArray, ({ asset }) => asset.symbol)
         const joinedSymbols = _.join(symbolsArray, ",")
-        const exchangeData = await toFiat(joinedSymbols, "USD")
+        const exchangeData = (await toFiat(joinedSymbols, "USD")) || []
         const included = uniqueAmountsArray.filter((holding) =>
           exchangeData.some((obj) => holding.asset.symbol === obj.id)
         )

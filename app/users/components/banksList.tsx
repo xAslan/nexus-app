@@ -18,11 +18,14 @@ const BanksList = (props) => {
                 <styled.BanksList>
                   <div>
                     <strong> {institution.name} </strong>
-                    <strong> ${fiatAmount} </strong>
+                    <strong>
+                      {" "}
+                      $ {fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
+                    </strong>
                   </div>
 
                   <div>
-                    <span> {amount} </span>
+                    <span> {amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} </span>
                     <span> {asset.symbol} </span>
                   </div>
                 </styled.BanksList>
