@@ -40,14 +40,6 @@ export const User = () => {
             </Col>
             <Col xs={24} md={12}>
               <Row justify="space-between">
-                <Col xs={22} md={11}>
-                  <CashFlow />
-                </Col>
-
-                <Col xs={22} md={12}>
-                  <RecentActivities />
-                </Col>
-
                 <Col xs={24}>
                   <TransactionsTable />
                 </Col>

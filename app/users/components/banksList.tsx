@@ -1,12 +1,12 @@
 import { Skeleton, Input, List, Button, Row, Col, Card } from "antd"
 import * as styled from "app/users/components/styles"
 import { useAggregates } from "app/users/components/dashboardCtx"
+import _ from "lodash"
 
 const BanksList = (props) => {
   const { holdings } = useAggregates()
 
   const renderList = (holdings = []) => {
-    console.log(holdings)
     return (
       <styled.AccountsCard title="Accounts" bordered={false}>
         <List
