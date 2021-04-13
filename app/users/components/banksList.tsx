@@ -7,26 +7,37 @@ const BanksList = (props) => {
   const { holdings } = useAggregates()
 
   const renderList = (holdings = []) => {
+    const holdingsObjects = _.mapValues(
+      _.groupBy(holdings, ({ accountId }) => accountId),
+      (arr, keyIdx) => {
+        const totalAmount = _.sumBy(arr, (account) => account.fiatAmount)
+        return {
+          accountId: arr[0]["accountId"],
+          totalAmount,
+          accountName: arr[0]["institution"]["name"],
+        }
+      }
+    )
+
+    const holdingsArray = Object.entries(holdingsObjects).map((obj) => obj[1])
+
+    console.log(holdings)
+
     return (
       <styled.AccountsCard title="Accounts" bordered={false}>
         <List
           itemLayout="horizontal"
-          dataSource={holdings}
-          renderItem={({ institution, fiatAmount, amount, asset }) => (
+          dataSource={holdingsArray}
+          renderItem={({ accountName, totalAmount, accountId }) => (
             <Skeleton loading={holdings.length > 0 ? false : true} active avatar>
               <List.Item>
                 <styled.BanksList>
                   <div>
-                    <strong> {institution.name} </strong>
+                    <strong> {accountName} </strong>
                     <strong>
                       {" "}
-                      $ {fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
+                      $ {totalAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
                     </strong>
-                  </div>
-
-                  <div>
-                    <span> {amount.toLocaleString("en-US", { maximumFractionDigits: 2 })} </span>
-                    <span> {asset.symbol} </span>
                   </div>
                 </styled.BanksList>
               </List.Item>

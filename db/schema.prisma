@@ -72,9 +72,19 @@ model Account {
   zaboAccountId   String?       @map("zabo_account_id")
   lastSync        DateTime?     @map("last_sync")
   lastSyncEnd     DateTime?     @map("last_sync_end")
+  balances        Balance[]
   syncStatus      String        @default("inactive") @map("sync_status")
   @@unique(fields: [zaboAccountId, userId], name: "zaboAccountIdUserId")
   @@map("account")
+}
+
+model Balance {
+  id                 Int       @default(autoincrement()) @id
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  amount             Int  //In USD
+  accountId          Int
+  account            Account @relation(fields: [accountId], references: [id])
 }
 
 model Wallet {
