@@ -1,16 +1,19 @@
-import { Suspense } from "react"
+import { useEffect, Suspense } from "react"
 import Layout from "app/layouts/Layout"
 import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
+import AccountView from "app/accounts/components/accountsView"
 
 export const Account = () => {
   const router = useRouter()
   const accountId = useParam("accountId", "number")
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
+    include: { subAccounts: { include: { holdings: { include: { asset: true } } } } },
   })
+
   const [deleteAccountMutation] = useMutation(deleteAccount)
   const [syncAccountMutation] = useMutation(syncAccount)
 
@@ -36,8 +39,7 @@ export const Account = () => {
 
   return (
     <div>
-      <h1>Account {account.id}</h1>
-      <pre>{JSON.stringify(account, null, 2)}</pre>
+      <AccountView accounts={account} />
 
       <Link href={`/accounts/${account.id}/edit`}>
         <a>Edit</a>

@@ -12,11 +12,3 @@ export const toFiat = async (cryptoString, fiatCurrency = "USD") => {
     console.log(e)
   }
 }
-
-const balanceToStr = (balances = []) => {
-  if (Array.isArray(balances)) {
-    return balances.reduce((acc, balanceObj) => {
-      return acc.concat(`${balanceObj.currency},`)
-    }, "")
-  }
-}

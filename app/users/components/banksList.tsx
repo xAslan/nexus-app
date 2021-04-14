@@ -1,3 +1,4 @@
+import { useRouter } from "blitz"
 import { Skeleton, Input, List, Button, Row, Col, Card } from "antd"
 import * as styled from "app/users/components/styles"
 import { useAggregates } from "app/users/components/dashboardCtx"
@@ -5,6 +6,7 @@ import _ from "lodash"
 
 const BanksList = (props) => {
   const { holdings } = useAggregates()
+  const router = useRouter()
 
   const renderList = (holdings = []) => {
     const holdingsObjects = _.mapValues(
@@ -30,7 +32,7 @@ const BanksList = (props) => {
           dataSource={holdingsArray}
           renderItem={({ accountName, totalAmount, accountId }) => (
             <Skeleton loading={holdings.length > 0 ? false : true} active avatar>
-              <List.Item>
+              <List.Item onClick={() => router.push(`/accounts/${accountId}`)}>
                 <styled.BanksList>
                   <div>
                     <strong> {accountName} </strong>
@@ -46,7 +48,10 @@ const BanksList = (props) => {
         />
 
         <styled.CenteredButton>
-          <Button block> Link Account </Button>
+          <Button block onClick={() => router.push("/accounts/new")}>
+            {" "}
+            Link Account{" "}
+          </Button>
         </styled.CenteredButton>
       </styled.AccountsCard>
     )

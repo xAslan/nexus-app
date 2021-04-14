@@ -25,36 +25,57 @@ const AccountsView = (props) => {
   }
 
   const renderPanels = (accounts) => {
-    return accounts.map((account, idx) => {
-      //- Using a hook inside a .map function is a bad practise.
-      //const {sum} = useQuery(getHoldingsAgg, {subAccountId: account.subAccounts[0].id})[0]
-      return (
-        <Panel
-          key={idx}
-          header={
-            <styled.PanelHeader>
-              <strong>{account.name}</strong>
-              {/*<span> $ {sum.fiatAmount} </span>*/}
-            </styled.PanelHeader>
-          }
-        >
-          <Row justify="start">
-            <Col xs={24}>
-              <styled.PanelBody>
-                <ul>{renderHoldings(account.subAccounts)}</ul>
-              </styled.PanelBody>
-            </Col>
-          </Row>
+    if (Array.isArray(accounts)) {
+      return accounts.map((account, idx) => {
+        //- Using a hook inside a .map function is a bad practise.
+        //const {sum} = useQuery(getHoldingsAgg, {subAccountId: account.subAccounts[0].id})[0]
+        return (
+          <Panel
+            key={idx}
+            header={
+              <styled.PanelHeader>
+                <strong>{account.name}</strong>
+                {/*<span> $ {sum.fiatAmount} </span>*/}
+              </styled.PanelHeader>
+            }
+          >
+            <Row justify="start">
+              <Col xs={24}>
+                <styled.PanelBody>
+                  <ul>{renderHoldings(account.subAccounts)}</ul>
+                </styled.PanelBody>
+              </Col>
+            </Row>
 
-          <Row justify="end">
-            <Button type="primary" onClick={() => handleAccountVisit(account.id)}>
-              {" "}
-              Visit Account{" "}
-            </Button>
-          </Row>
-        </Panel>
-      )
-    })
+            <Row justify="end">
+              <Button type="primary" onClick={() => handleAccountVisit(account.id)}>
+                {" "}
+                Visit Account{" "}
+              </Button>
+            </Row>
+          </Panel>
+        )
+      })
+    }
+
+    return (
+      <Panel
+        header={
+          <styled.PanelHeader>
+            <strong>{accounts.name}</strong>
+            {/*<span> $ {sum.fiatAmount} </span>*/}
+          </styled.PanelHeader>
+        }
+      >
+        <Row justify="start">
+          <Col xs={24}>
+            <styled.PanelBody>
+              <ul>{renderHoldings(accounts.subAccounts)}</ul>
+            </styled.PanelBody>
+          </Col>
+        </Row>
+      </Panel>
+    )
   }
 
   return (
