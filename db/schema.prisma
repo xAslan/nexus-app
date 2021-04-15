@@ -132,6 +132,7 @@ model Asset {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String   
+  type      AssetType @default(OTHER)
   symbol    String
   address   String  @default("0")
   @@unique(fields: [symbol, address], name: "symbolAddress")

@@ -1,6 +1,6 @@
 import { Prisma } from "db"
 
-export function subAccountsConstructor(currentAccount) {
+export function subAccountsConstructor(currentAccount, assetType = "FIAT") {
   return {
     subAccounts: {
       create: {
@@ -21,6 +21,7 @@ export function subAccountsConstructor(currentAccount) {
                 create: {
                   symbol: currentAccount.balances.iso_currency_code,
                   name: currentAccount.balances.iso_currency_code,
+                  type: assetType,
                 },
               },
             },
@@ -31,7 +32,7 @@ export function subAccountsConstructor(currentAccount) {
   }
 }
 
-export function accountsConstructor(data, ctx, currentAccount, accountType) {
+export function accountsConstructor(data, ctx, currentAccount, accountType, assetType = "FIAT") {
   return {
     name: data.institution.name,
     type: accountType,
@@ -60,6 +61,7 @@ export function accountsConstructor(data, ctx, currentAccount, accountType) {
                 create: {
                   symbol: currentAccount.balances.iso_currency_code,
                   name: currentAccount.balances.iso_currency_code,
+                  type: assetType,
                 },
               },
             },
