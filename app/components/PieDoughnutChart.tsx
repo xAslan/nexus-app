@@ -1,18 +1,23 @@
-import React from "react"
 import { Doughnut, Pie } from "react-chartjs-2"
 import { Card } from "antd"
-import "antd/dist/antd.css"
+import { useAggregates } from "app/users/components/dashboardCtx"
+import _ from "lodash"
 
 var options = {
   tooltips: {
     callbacks: {
-      label: function (tooltipItem, data) {
-        var dataset = data.datasets[tooltipItem.datasetIndex]
-        var meta = dataset._meta[Object.keys(dataset._meta)[0]]
-        var total = meta.total
-        var currentValue = dataset.data[tooltipItem.index]
-        var percentage = parseFloat(((currentValue / total) * 100).toFixed(1))
-        return currentValue + " (" + percentage + "%)"
+      label: (tooltipItem, data) => {
+        const dataset = data.datasets[tooltipItem.datasetIndex]
+        const meta = dataset._meta[Object.keys(dataset._meta)[0]]
+        const total = meta.total
+        const currentValue = dataset.data[tooltipItem.index]
+        const percentage = parseFloat(((currentValue / total) * 100).toFixed(1))
+        return (
+          currentValue.toLocaleString("en-US", { maximumFractionDigits: 2 }) +
+          " (" +
+          percentage +
+          "%)"
+        )
       },
       title: function (tooltipItem, data) {
         return data.labels[tooltipItem[0].index]
@@ -28,74 +33,97 @@ var options = {
   maintainAspectRatio: false,
 }
 
-class PieDoughnutChart extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {}
-  }
+const getChartData = (holdingsAgg = []) => {
+  if (holdingsAgg.length <= 5) {
+    const sortedCryptoCoin = holdingsAgg.sort((a, b) => b["fiatAmount"] - a["fiatAmount"])
 
-  render() {
-    this.chartLabelName = []
-    let chartLabelInProgress = []
+    return _.map(sortedCryptoCoin, (holding) => ({
+      chartLabel: holding.asset.name,
+      chartProgress: holding.fiatAmount,
+    }))
+  } else if (holdingsAgg.length >= 6) {
+    let sortedCryptoCoin = holdingsAgg.sort((a, b) => b["fiatAmount"] - a["fiatAmount"])
 
-    this.chartData = []
-    let chartDataInProgress = []
-
-    let otherCategoryDollarAmount = []
-
-    if (this.props.cryptoCoin.length <= 5) {
-      let sortedCryptoCoin = this.props.cryptoCoin.sort(
-        (a, b) => b.primaryCurrencyAmount - a.primaryCurrencyAmount
-      )
-      for (let i = 0; i < sortedCryptoCoin.length; i++) {
-        chartLabelInProgress.push(sortedCryptoCoin[i].name)
-        chartDataInProgress.push(sortedCryptoCoin[i].primaryCurrencyAmount)
-      }
-
-      this.chartLabelName = chartLabelInProgress
-      this.chartData = chartDataInProgress
-    } else if (this.props.cryptoCoin.length >= 6) {
-      let sortedCryptoCoin = this.props.cryptoCoin.sort(
-        (a, b) => b.primaryCurrencyAmount - a.primaryCurrencyAmount
-      )
-      for (let i = 0; i < sortedCryptoCoin.length; i++) {
-        if (i <= 3) {
-          chartLabelInProgress.push(sortedCryptoCoin[i].name)
-          chartDataInProgress.push(sortedCryptoCoin[i].primaryCurrencyAmount)
-        } else if (i >= 4) {
-          otherCategoryDollarAmount.push(sortedCryptoCoin[i].primaryCurrencyAmount)
+    return _.reduce(
+      sortedCryptoCoin,
+      (acc, holding, idx) => {
+        if (idx <= 3) {
+          return acc.concat({
+            chartLabel: holding.asset.name,
+            chartProgress: holding.fiatAmount,
+          })
         }
-      }
 
-      const reducer = (accumulator, currentValue) => accumulator + currentValue // calculates otherCategoryDollarAmount values
-      chartLabelInProgress.push("OTHER")
-      chartDataInProgress.push(otherCategoryDollarAmount.reduce(reducer))
+        if (typeof acc[4] === "undefined") {
+          return acc.concat({
+            chartLabel: "OTHER",
+            chartProgress: holding.fiatAmount,
+          })
+        } else {
+          const sum = {
+            chartLabel: "OTHER",
+            chartProgress: acc[4]["chartProgress"] + holding.fiatAmount,
+          }
 
-      this.chartLabelName = chartLabelInProgress
-      this.chartData = chartDataInProgress
-    }
+          return _.uniqBy([sum, ...acc], ({ chartLabel }) => chartLabel)
+        }
+      },
+      []
+    )
+  }
+}
 
-    let data = {
-      labels: this.chartLabelName,
+export const PieDoughnutChart = (props) => {
+  const { holdings } = useAggregates()
+
+  const renderPieChart = (holdings = [], type = "Not a Pie") => {
+    const uniqHoldings = _.reduce(
+      holdings,
+      (acc, curr) => {
+        const idx = _.findIndex(acc, (obj) => obj.assetId === curr.assetId)
+        if (idx >= 0) {
+          const sumFiat = curr.fiatAmount + acc[idx]["fiatAmount"]
+          const sumCoin = curr.amount + acc[idx]["amount"]
+
+          const newHoldingsArray = [
+            ...acc,
+            {
+              ...curr,
+              amount: sumCoin,
+              fiatAmount: sumFiat,
+            },
+          ]
+
+          return _.uniqBy(_.reverse(newHoldingsArray), ({ assetId }) => assetId)
+        }
+
+        return acc.concat(curr)
+      },
+      []
+    )
+
+    const chartData = getChartData(uniqHoldings)
+
+    const chartLabels = _.map(chartData, (holding) => holding.chartLabel)
+    const chartAmounts = _.map(chartData, (holding) => holding.chartProgress)
+
+    const data = {
+      labels: chartLabels,
       datasets: [
         {
-          data: this.chartData,
+          data: chartAmounts,
           backgroundColor: ["#34A370", "#FFB129", "#3EDE86", "#154A39", "#FF6565"],
           hoverBackgroundColor: ["#34A370", "#FFB129", "#3EDE86", "#154A39", "#FF6565"],
         },
       ],
     }
 
-    return (
-      <Card title={this.props.title}>
-        {this.props.type === "Pie" ? (
-          <Pie data={data} options={options} height={300} />
-        ) : (
-          <Doughnut data={data} options={options} height={300} />
-        )}
-      </Card>
-    )
-  }
-}
+    if (type === "Pie") {
+      return <Pie data={data} options={options} height={300} />
+    }
 
-export default PieDoughnutChart
+    return <Doughnut data={data} options={options} height={300} />
+  }
+
+  return <Card title={props.title}>{renderPieChart(holdings, props.type)}</Card>
+}

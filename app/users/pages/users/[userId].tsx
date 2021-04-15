@@ -13,17 +13,8 @@ import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
 import TotalAmount from "app/users/components/totalAmount"
 import BanksList from "app/users/components/banksList"
-import PieDoughnutChart from "app/components/PieDoughnutChart"
+import { PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
-
-const cryptoCoin = [
-  { name: "BTC", amount: 1.4, primaryCurrencyAmount: 1000 },
-  { name: "ETH", amount: 10.3, primaryCurrencyAmount: 1000 },
-  { name: "USDT", amount: 5, primaryCurrencyAmount: 2000 },
-  { name: "XRP", amount: 15, primaryCurrencyAmount: 4000 },
-  { name: "LTC", amount: 0.3, primaryCurrencyAmount: 200 },
-  { name: "LTC", amount: 0.3, primaryCurrencyAmount: 1231 },
-]
 
 const valueOfAccount = [
   { timestamp: 1612869664000, value: 200 },
@@ -75,11 +66,7 @@ export const User = () => {
 
             <Col xs={24} md={8} lg={5}>
               <Space direction="vertical">
-                <PieDoughnutChart
-                  title="Nexus Finance Pie"
-                  type="Doughnut"
-                  cryptoCoin={cryptoCoin}
-                />
+                <PieDoughnutChart title="Crypto Currencies" type="Doughnut" />
               </Space>
             </Col>
           </Row>

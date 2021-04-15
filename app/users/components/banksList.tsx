@@ -23,8 +23,6 @@ const BanksList = (props) => {
 
     const holdingsArray = Object.entries(holdingsObjects).map((obj) => obj[1])
 
-    console.log(holdings)
-
     return (
       <styled.AccountsCard title="Accounts" bordered={false}>
         <List
