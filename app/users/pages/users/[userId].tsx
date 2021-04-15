@@ -66,7 +66,11 @@ export const User = () => {
 
             <Col xs={24} md={8} lg={5}>
               <Space direction="vertical">
-                <PieDoughnutChart title="Crypto Currencies" type="Doughnut" />
+                <PieDoughnutChart
+                  title="Crypto Currencies"
+                  type="Doughnut"
+                  filter={(holding) => holding.asset.type === "CRYPTO"}
+                />
               </Space>
             </Col>
           </Row>

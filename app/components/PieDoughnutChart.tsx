@@ -125,5 +125,11 @@ export const PieDoughnutChart = (props) => {
     return <Doughnut data={data} options={options} height={300} />
   }
 
+  if (typeof props.filter !== "undefined") {
+    const filteredHoldings = _.filter(holdings, props.filter)
+
+    return <Card title={props.title}>{renderPieChart(filteredHoldings, props.type)}</Card>
+  }
+
   return <Card title={props.title}>{renderPieChart(holdings, props.type)}</Card>
 }
