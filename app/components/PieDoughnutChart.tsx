@@ -38,7 +38,7 @@ const getChartData = (holdingsAgg = []) => {
     const sortedCryptoCoin = holdingsAgg.sort((a, b) => b["fiatAmount"] - a["fiatAmount"])
 
     return _.map(sortedCryptoCoin, (holding) => ({
-      chartLabel: holding.asset.name,
+      chartLabel: holding?.asset?.name! || holding.label,
       chartProgress: holding.fiatAmount,
     }))
   } else if (holdingsAgg.length >= 6) {
@@ -129,6 +129,63 @@ export const PieDoughnutChart = (props) => {
     const filteredHoldings = _.filter(holdings, props.filter)
 
     return <Card title={props.title}>{renderPieChart(filteredHoldings, props.type)}</Card>
+  }
+
+  return <Card title={props.title}>{renderPieChart(holdings, props.type)}</Card>
+}
+
+export const DiffPieChart = (props) => {
+  const { holdings } = useAggregates()
+
+  const renderPieChart = (holdings = [], type = "Not a Pie") => {
+    const uniqHoldings = _.reduce(
+      holdings,
+      (acc, curr) => {
+        const idx = _.findIndex(acc, ({ label }) => label === curr.asset.type)
+
+        if (idx >= 0) {
+          const sumAmount = curr.fiatAmount + acc[idx]["fiatAmount"]
+
+          const newHoldingsArray = [
+            ...acc,
+            {
+              label: curr.asset.type,
+              fiatAmount: sumAmount,
+            },
+          ]
+
+          return _.uniqBy(_.reverse(newHoldingsArray), ({ label }) => label)
+        }
+
+        return acc.concat({
+          label: curr.asset.type,
+          fiatAmount: curr.fiatAmount,
+        })
+      },
+      []
+    )
+
+    const chartData = getChartData(uniqHoldings)
+
+    const chartLabels = _.map(chartData, (holding) => holding.chartLabel)
+    const chartAmounts = _.map(chartData, (holding) => holding.chartProgress)
+
+    const data = {
+      labels: chartLabels,
+      datasets: [
+        {
+          data: chartAmounts,
+          backgroundColor: ["#34A370", "#FFB129", "#3EDE86", "#154A39", "#FF6565"],
+          hoverBackgroundColor: ["#34A370", "#FFB129", "#3EDE86", "#154A39", "#FF6565"],
+        },
+      ],
+    }
+
+    if (type === "Pie") {
+      return <Pie data={data} options={options} height={300} />
+    }
+
+    return <Doughnut data={data} options={options} height={300} />
   }
 
   return <Card title={props.title}>{renderPieChart(holdings, props.type)}</Card>

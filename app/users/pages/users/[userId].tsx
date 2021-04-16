@@ -13,7 +13,7 @@ import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
 import TotalAmount from "app/users/components/totalAmount"
 import BanksList from "app/users/components/banksList"
-import { PieDoughnutChart } from "app/components/PieDoughnutChart"
+import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
 
 const valueOfAccount = [
@@ -66,6 +66,8 @@ export const User = () => {
 
             <Col xs={24} md={8} lg={5}>
               <Space direction="vertical">
+                <DiffPieChart title="Traditional VS Crypto" type="Pie" />
+
                 <PieDoughnutChart
                   title="Crypto Currencies"
                   type="Doughnut"

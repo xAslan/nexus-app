@@ -18,9 +18,6 @@ export const AccountTypesForm = (props) => {
   const onPlaidSuccess = useCallback(async (token, metadata) => {
     const plaidAccessToken = await setAccessTokenMutation({ token })
 
-    console.log("ACCESSS")
-    console.log(plaidAccessToken)
-
     try {
       ;(await props.onSuccess) &&
         props.onSuccess({
