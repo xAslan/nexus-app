@@ -11,3 +11,15 @@ export const compareArrayObjects = (objectTwo, objectOne) => {
 
   return objectOne
 }
+
+export const arrayIncludesWith = (array, value, comparator) => {
+  var index = -1,
+    length = array == null ? 0 : array.length
+
+  while (++index < length) {
+    if (comparator(value, array[index])) {
+      return true
+    }
+  }
+  return false
+}

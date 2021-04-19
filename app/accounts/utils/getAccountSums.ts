@@ -43,25 +43,29 @@ export const getAssetsAmounts = (account) => {
 
 export const getFiatAmounts = async (uniqueHoldings = []) => {
   if (uniqueHoldings.length > 0) {
-    const arrayOfSymbols = _.map(uniqueHoldings, (holding) =>
-      _.flatMap(holding, ({ asset }) => asset.symbol)
-    )
+    const arrayOfSymbols = _.flatMap(uniqueHoldings, ({ asset }) => asset.symbol)
+
     const symbolsArray = _.reduce(
       arrayOfSymbols,
-      (acc, currentArray) => _.uniq([...acc, ...currentArray]),
+      (acc, currentArray) => acc.concat(currentArray),
       []
     )
+
     const joinedSymbols = _.join(symbolsArray, ",")
     const exchangeData = await toFiat(joinedSymbols, "USD")
 
     const included = _.reduce(
       uniqueHoldings,
       (acc, currAccount) => {
-        return acc.concat(
-          currAccount.filter((holding) => {
-            return exchangeData.some((obj) => holding.asset.symbol === obj.id)
+        const curr = exchangeData
+          .map((obj) => {
+            if (obj.id === currAccount.asset.symbol) {
+              return currAccount
+            }
           })
-        )
+          .filter((o) => o)
+
+        return acc.concat([...curr])
       },
       []
     )
@@ -69,9 +73,15 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
     const excluded = _.reduce(
       uniqueHoldings,
       (acc, currAccount) => {
-        return acc.concat(
-          _.differenceWith(currAccount, exchangeData, ({ asset }, obj) => asset.symbol === obj.id)
-        )
+        const curr = exchangeData
+          .map((obj) => {
+            if (obj.id !== currAccount.asset.symbol) {
+              return currAccount
+            }
+          })
+          .filter((o) => o)
+
+        return acc.concat([...curr])
       },
       []
     )

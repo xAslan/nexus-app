@@ -9,6 +9,11 @@ const TotalAmount = (props) => {
     if (sum > 0) {
       return (
         <styled.TotalAmountCard bordered={false}>
+          {props.title && (
+            <p>
+              <strong>{props.title}</strong>
+            </p>
+          )}
           <p>
             <strong>
               $&nbsp;{holdingsSum.toLocaleString("en-US", { maximumFractionDigits: 2 })}
@@ -16,15 +21,21 @@ const TotalAmount = (props) => {
             <span> +4% </span>
           </p>
 
-          <p>
-            <strong style={{ textDecoration: "strike" }}>&pound; 8,000</strong>
-            <span> 30 days </span>
-          </p>
+          {!props.title && (
+            <p>
+              <strong style={{ textDecoration: "strike" }}>&pound; 8,000</strong>
+              <span> 30 days </span>
+            </p>
+          )}
         </styled.TotalAmountCard>
       )
     }
 
-    return <Skeleton active={true} loading={true} />
+    return (
+      <styled.TotalAmountCard>
+        <strong>This Account has no funds</strong>
+      </styled.TotalAmountCard>
+    )
   }
 
   return renderSum(holdingsSum)

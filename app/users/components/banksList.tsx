@@ -4,7 +4,13 @@ import * as styled from "app/users/components/styles"
 import { useAggregates } from "app/users/components/dashboardCtx"
 import _ from "lodash"
 
-const BanksList = (props) => {
+interface banksListProps {
+  title?: string
+  hasButton?: boolean
+  renderAssets?: boolean
+}
+
+const BanksList = (props: banksListProps) => {
   const { holdings } = useAggregates()
   const router = useRouter()
 
@@ -21,10 +27,32 @@ const BanksList = (props) => {
       }
     )
 
-    const holdingsArray = Object.entries(holdingsObjects).map((obj) => obj[1])
+    const renderMultiple = (holdingsArray = [], renderAssets = false, holdings = []) => {
+      if (renderAssets) {
+        return (
+          <List
+            itemLayout="horizontal"
+            dataSource={holdings}
+            renderItem={({ asset, fiatAmount }) => (
+              <Skeleton loading={holdings.length > 0 ? false : true} active avatar>
+                <List.Item onClick={() => router.push(`/accounts/${accountId}`)}>
+                  <styled.BanksList>
+                    <div>
+                      <strong> {asset.symbol} </strong>
+                      <strong>
+                        {" "}
+                        $ {fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
+                      </strong>
+                    </div>
+                  </styled.BanksList>
+                </List.Item>
+              </Skeleton>
+            )}
+          />
+        )
+      }
 
-    return (
-      <styled.AccountsCard title="Accounts" bordered={false}>
+      return (
         <List
           itemLayout="horizontal"
           dataSource={holdingsArray}
@@ -44,13 +72,23 @@ const BanksList = (props) => {
             </Skeleton>
           )}
         />
+      )
+    }
 
-        <styled.CenteredButton>
-          <Button block onClick={() => router.push("/accounts/new")}>
-            {" "}
-            Link Account{" "}
-          </Button>
-        </styled.CenteredButton>
+    const holdingsArray = Object.entries(holdingsObjects).map((obj) => obj[1])
+
+    return (
+      <styled.AccountsCard title={props.title || "Accounts"} bordered={false}>
+        {renderMultiple(holdingsArray, props.renderAssets, holdings)}
+
+        {props.hasButton && (
+          <styled.CenteredButton>
+            <Button block onClick={() => router.push("/accounts/new")}>
+              {" "}
+              Link Account{" "}
+            </Button>
+          </styled.CenteredButton>
+        )}
       </styled.AccountsCard>
     )
   }

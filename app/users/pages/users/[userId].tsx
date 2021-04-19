@@ -51,7 +51,7 @@ export const User = () => {
           <Row justify="space-between">
             <Col xs={24} md={8} lg={6}>
               <TotalAmount />
-              <BanksList />
+              <BanksList hasButton={true} />
             </Col>
             <Col xs={24} md={12}>
               <Row justify="space-between">

@@ -7,7 +7,11 @@ export default async function deleteAccount({ where }: DeleteAccountInput, ctx: 
   ctx.session.$authorize()
 
   // TODO: remove once Prisma supports cascading deletes
-  await db.wallet.deleteMany({ where: { account: { id: where.id } } })
+  const subAccounts = await db.subAccount.delete({ where: { accountId: where.id } })
+
+  await subAccounts.forEach(async (subAc) => {
+    await db.holding.delete({ where: { subAccountId: subAc.id } })
+  })
   const account = await db.account.delete({ where })
 
   return account
