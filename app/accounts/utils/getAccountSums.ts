@@ -56,7 +56,7 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
 
     const included = _.reduce(
       uniqueHoldings,
-      (acc, currAccount) => {
+      (acc, currAccount, idx, arr) => {
         const curr = exchangeData
           .map((obj) => {
             if (obj.id === currAccount.asset.symbol) {
@@ -70,21 +70,7 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
       []
     )
 
-    const excluded = _.reduce(
-      uniqueHoldings,
-      (acc, currAccount) => {
-        const curr = exchangeData
-          .map((obj) => {
-            if (obj.id !== currAccount.asset.symbol) {
-              return currAccount
-            }
-          })
-          .filter((o) => o)
-
-        return acc.concat([...curr])
-      },
-      []
-    )
+    const excluded = _.differenceBy(uniqueHoldings, included, "assetId")
 
     const holdingsWithFakeFiatAmounts = _.map(excluded, (holding) => ({
       ...holding,

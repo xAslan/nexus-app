@@ -33,12 +33,15 @@ const BanksList = (props: banksListProps) => {
           <List
             itemLayout="horizontal"
             dataSource={holdings}
-            renderItem={({ asset, fiatAmount }) => (
+            renderItem={({ asset, fiatAmount, amount }) => (
               <Skeleton loading={holdings.length > 0 ? false : true} active avatar>
                 <List.Item onClick={() => router.push(`/accounts/${accountId}`)}>
                   <styled.BanksList>
                     <div>
-                      <strong> {asset.symbol} </strong>
+                      <strong>
+                        {" "}
+                        {amount} {asset.symbol}{" "}
+                      </strong>
                       <strong>
                         {" "}
                         $ {fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}{" "}
