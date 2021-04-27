@@ -76,10 +76,18 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
       []
     )
 
-    const holdingsWithFakeFiatAmounts = _.map(excluded, (holding) => ({
-      ...holding,
-      fiatAmount: holding.amount,
-    }))
+    const holdingsWithFakeFiatAmounts = _.map(excluded, (holding) => {
+      if (holding.asset.type === "FIAT") {
+        return {
+          ...holding,
+          fiatAmount: holding.amount,
+        }
+      }
+      return {
+        ...holding,
+        fiatAmount: 0,
+      }
+    })
 
     const holdingsWithFiatAmounts = _.map(included, (holding) => {
       const { price } = _.find(exchangeData, ({ id }) => holding.asset.symbol === id)

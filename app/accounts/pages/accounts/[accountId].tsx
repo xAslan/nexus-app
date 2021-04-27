@@ -1,12 +1,12 @@
 import { useEffect, Suspense } from "react"
+import * as styled from "app/users/components/styles"
 import Layout from "app/layouts/Layout"
 import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
 import AccountView from "app/accounts/components/accountsView"
-import * as styled from "app/users/components/styles"
-import { Spin, Row, Col, Space } from "antd"
+import { Button, Spin, Row, Col, Space } from "antd"
 
 import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
@@ -51,6 +51,16 @@ export const Account = () => {
             <Col xs={24} md={8} lg={6}>
               <TotalAmount title={account.institution.name} />
               <BanksList title="Assets" hasButton={false} renderAssets={true} />
+              <styled.CenteredButton>
+                <Button
+                  style={{ marginTop: "1em" }}
+                  block
+                  size="large"
+                  onClick={() => router.back()}
+                >
+                  <strong style={{}}>All Accounts</strong>
+                </Button>
+              </styled.CenteredButton>
             </Col>
             <Col xs={24} md={12}>
               <Row justify="space-between">
