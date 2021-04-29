@@ -33,8 +33,9 @@ const valueOfAccount = [
   { timestamp: 1549641157000, value: 512 },
 ]
 
-export const User = () => {
+export const UserPageComponent = () => {
   const userId = useParam("userId", "number")
+  const router = useRouter()
   const [user] = useQuery(getUser, { where: { id: userId } })
   const [{ accounts }] = useQuery(getAccounts, {
     where: { userId: user.id },
@@ -44,85 +45,82 @@ export const User = () => {
     },
   })
 
-  return (
-    <AggregateProvider accounts={accounts}>
-      <Row justify="center" style={{ marginTop: "1.2em" }}>
-        <Col xs={0} lg={22}>
-          <Row justify="space-between">
-            <Col xs={24} md={8} lg={6}>
-              <TotalAmount />
-              <BanksList hasButton={true} />
-            </Col>
-            <Col xs={24} md={12}>
+  const renderAccounts = (accounts = []) => {
+    if (accounts.length > 0) {
+      return (
+        <AggregateProvider accounts={accounts}>
+          <Row justify="center" style={{ marginTop: "1.2em" }}>
+            <Col xs={0} lg={22}>
               <Row justify="space-between">
-                <Col xs={24}>
-                  <LineChart valueOfAccount={valueOfAccount} />
+                <Col xs={24} md={8} lg={6}>
+                  <TotalAmount />
+                  <BanksList hasButton={true} />
                 </Col>
-                <Col xs={24}>
-                  <TransactionsTable />
+                <Col xs={24} md={12}>
+                  <Row justify="space-between">
+                    <Col xs={24}>
+                      <LineChart valueOfAccount={valueOfAccount} />
+                    </Col>
+                    <Col xs={24}>
+                      <TransactionsTable />
+                    </Col>
+                  </Row>
+                </Col>
+
+                <Col xs={24} md={8} lg={5}>
+                  <Space direction="vertical">
+                    <DiffPieChart title="Traditional VS Crypto" type="Pie" />
+
+                    <PieDoughnutChart
+                      title="Crypto Currencies"
+                      type="Doughnut"
+                      filter={(holding) => holding.asset.type === "CRYPTO"}
+                    />
+                  </Space>
                 </Col>
               </Row>
             </Col>
-
-            <Col xs={24} md={8} lg={5}>
-              <Space direction="vertical">
-                <DiffPieChart title="Traditional VS Crypto" type="Pie" />
-
-                <PieDoughnutChart
-                  title="Crypto Currencies"
-                  type="Doughnut"
-                  filter={(holding) => holding.asset.type === "CRYPTO"}
-                />
-              </Space>
-            </Col>
           </Row>
-        </Col>
-      </Row>
-    </AggregateProvider>
-  )
-}
-
-const ErrorFallbackComponent = ({ error }) => {
-  const router = useRouter()
-
-  console.log(error)
-
-  const renderError = (error) => {
-    if (error.statusCode === 404) {
-      return (
-        <CenterContent>
-          <section>
-            <p> Sorry, you need to have at least one account</p>
-            <Button type="primary" onClick={() => router.push("/accounts/new")}>
-              {" "}
-              Add Account{" "}
-            </Button>
-          </section>
-        </CenterContent>
+        </AggregateProvider>
       )
     }
 
     return (
       <CenterContent>
         <section>
-          <p> Sorry, something went wrong, {error.message} </p>
-          <Button type="primary" onClick={() => router.push("/")}>
-            {" "}
-            Go back home{" "}
+          <p>Sorry, you need to at least have one account</p>
+          <Button type="primary" onClick={() => router.push("/accounts/new")}>
+            <strong>Create new account</strong>
           </Button>
         </section>
       </CenterContent>
     )
   }
 
-  return renderError(error)
+  return renderAccounts(accounts)
+}
+
+const ErrorFallbackComponent = ({ error }) => {
+  const router = useRouter()
+
+  return (
+    <CenterContent>
+      <section>
+        <p> Sorry, something went wrong, {error.message} </p>
+        <Button type="primary" onClick={() => router.push("/")}>
+          {" "}
+          Go back home{" "}
+        </Button>
+      </section>
+    </CenterContent>
+  )
 }
 
 const ShowUserPage: BlitzPage = () => {
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <ErrorBoundary FallbackComponent={ErrorFallbackComponent}>
-        <User />
+        <UserPageComponent />
       </ErrorBoundary>
     </Suspense>
   )

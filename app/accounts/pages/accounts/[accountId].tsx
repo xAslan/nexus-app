@@ -1,7 +1,7 @@
 import { useEffect, Suspense } from "react"
 import * as styled from "app/users/components/styles"
 import Layout from "app/layouts/Layout"
-import { Link, useRouter, useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { Link, useRouter, useQuery, useSession, useParam, BlitzPage, useMutation } from "blitz"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
@@ -33,6 +33,7 @@ const valueOfAccount = [
 ]
 
 export const Account = () => {
+  const session = useSession()
   const router = useRouter()
   const accountId = useParam("accountId", "number")
   const [account, { setQueryData }] = useQuery(getAccount, {
@@ -56,7 +57,7 @@ export const Account = () => {
                   style={{ marginTop: "1em" }}
                   block
                   size="large"
-                  onClick={() => router.back()}
+                  onClick={() => router.push(`/users/${session.userId}`)}
                 >
                   <strong style={{}}>All Accounts</strong>
                 </Button>
