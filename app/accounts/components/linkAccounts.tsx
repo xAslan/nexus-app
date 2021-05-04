@@ -8,6 +8,7 @@ import { accountTypes } from "app/accounts/utils/accountTypes"
 import getPlaidLinkToken from "app/queries/getPlaidLinkToken"
 import setAccessToken from "app/accounts/mutations/setAccessToken"
 import Zabo from "zabo-sdk-js"
+import { zaboClientInit } from "app/accounts/utils/zabo-init"
 
 export const AccountTypesForm = (props) => {
   const [accountType, setAccounttype] = useState(null)
@@ -37,10 +38,7 @@ export const AccountTypesForm = (props) => {
   const { open, ready, error } = usePlaidLink(plaidConfig)
 
   const connectWithZabo = async () => {
-    const zabo = await Zabo.init({
-      clientId: process.env.NEXT_PUBLIC_ZABO_CLIENT_ID,
-      env: "sandbox",
-    })
+    const zabo = await zaboClientInit()
 
     zabo.connect().onConnection((account) => {
       try {
