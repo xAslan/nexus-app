@@ -47,6 +47,7 @@
     "object-inspect": "1.9.0",
     "plaid": "8.2.0",
     "prisma": "2.17.0",
+    "quirrel": "1.4.4",
     "react": "0.0.0-experimental-4ead6b530",
     "react-chartjs-2": "2.11.1",
     "react-dom": "0.0.0-experimental-4ead6b530",
@@ -58,7 +59,7 @@
     "secure-password": "4.0.0",
     "styled-components": "5.2.1",
     "typescript": "4.0.5",
-    "zabo-sdk-js": "1.0.3",
+    "zabo-sdk-js": "1.2.0",
     "zod": "1.11.10"
   },
   "devDependencies": {
@@ -71,6 +72,7 @@
     "@typescript-eslint/eslint-plugin": "4.8.0",
     "@typescript-eslint/parser": "4.8.0",
     "babel-eslint": "10.1.0",
+    "concurrently": "6.0.2",
     "eslint": "7.13.0",
     "eslint-config-react-app": "5.2.1",
     "eslint-plugin-flowtype": "5.2.0",

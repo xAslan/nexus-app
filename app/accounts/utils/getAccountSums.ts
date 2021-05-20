@@ -1,6 +1,8 @@
 import _ from "lodash"
 import { toFiat } from "app/accounts/utils/exchange"
 import { arrayIncludesWith } from "utils/utils"
+import getExchange from "app/queries/getExchange"
+import { invoke } from "blitz"
 
 export const getAssetsAmounts = (account) => {
   return _.reduce(
@@ -52,14 +54,17 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
     )
 
     const joinedSymbols = _.join(symbolsArray, ",")
-    const exchangeData = await toFiat(joinedSymbols, "USD")
+    const exchangeData =
+      typeof global?.cache?.size! === "undefined" || global?.cache?.size! === 0
+        ? await invoke(getExchange, {})
+        : await toFiat(joinedSymbols, "USD")
 
     const included = _.reduce(
       uniqueHoldings,
       (acc, currAccount, idx, arr) => {
         const curr = exchangeData
           .map((obj) => {
-            if (obj.id === currAccount.asset.symbol) {
+            if (obj.currency === currAccount.asset.symbol) {
               return currAccount
             }
           })
@@ -86,8 +91,8 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
     })
 
     const holdingsWithFiatAmounts = _.map(included, (holding) => {
-      const { price } = _.find(exchangeData, ({ id }) => holding.asset.symbol === id)
-      const newPrice = Number(price) * Number(holding.amount)
+      const { rate } = _.find(exchangeData, ({ currency }) => holding.asset.symbol === currency)
+      const newPrice = Number(rate) * Number(holding.amount)
 
       return {
         ...holding,

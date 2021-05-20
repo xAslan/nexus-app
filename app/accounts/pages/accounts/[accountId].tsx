@@ -1,17 +1,15 @@
-import { useEffect, Suspense } from "react"
-import * as styled from "app/users/components/styles"
+import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { Link, useRouter, useQuery, useSession, useParam, BlitzPage, useMutation } from "blitz"
+import { useQuery, useParam, BlitzPage } from "blitz"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
 import AccountView from "app/accounts/components/accountsView"
-import { Button, Spin, Row, Col, Space } from "antd"
+import { Spin, Row, Col, Space } from "antd"
+import RightPane from "app/accounts/components/rightPane"
 
 import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
-import TotalAmount from "app/users/components/totalAmount"
-import BanksList from "app/users/components/banksList"
 import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
 
@@ -33,8 +31,6 @@ const valueOfAccount = [
 ]
 
 export const Account = () => {
-  const session = useSession()
-  const router = useRouter()
   const accountId = useParam("accountId", "number")
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
@@ -50,18 +46,7 @@ export const Account = () => {
         <Col xs={0} lg={22}>
           <Row justify="space-between">
             <Col xs={24} md={8} lg={6}>
-              <TotalAmount title={account.institution.name} />
-              <BanksList title="Assets" hasButton={false} renderAssets={true} />
-              <styled.CenteredButton>
-                <Button
-                  style={{ marginTop: "1em" }}
-                  block
-                  size="large"
-                  onClick={() => router.push(`/users/${session.userId}`)}
-                >
-                  <strong style={{}}>All Accounts</strong>
-                </Button>
-              </styled.CenteredButton>
+              <RightPane account={account} />
             </Col>
             <Col xs={24} md={12}>
               <Row justify="space-between">

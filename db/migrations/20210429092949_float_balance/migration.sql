@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Balance" ALTER COLUMN "amount" SET DATA TYPE DOUBLE PRECISION;

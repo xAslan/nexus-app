@@ -6,7 +6,7 @@ import {
 } from "app/accounts/utils/create"
 import db from "db"
 import { compareArrayObjects } from "utils/utils"
-import inspect from "object-inspect"
+import balanceCron from "app/api/balanceCron"
 
 //- TODO: invention of control
 //- Generate everything and make the saving logic here not in another file.
@@ -37,6 +37,12 @@ export default async function createAccount({ data }, ctx: Ctx) {
   await db.user.update({
     where: { id: account.userId },
     data: { zaboUserObj },
+  })
+
+  await balanceCron.enqueue(account.id, {
+    repeat: {
+      cron: "*/3 * * * *",
+    },
   })
 
   return account

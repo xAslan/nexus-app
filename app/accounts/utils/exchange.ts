@@ -1,27 +1,33 @@
 import axios from "axios"
+import moment from "moment"
+import exchangeCron from "app/api/exchangesCron"
 
-const memo = (callback) => {
-  const cache = new Map()
-  return (...args) => {
-    const key = JSON.stringify(args)
-    if (cache.has(key)) return cache.get(key)
-    const value = callback(...args)
-    cache.set(key, value)
-    return value
+export const getExchanges = async (fiatCurrency = "USD") => {
+  try {
+    global.cache ??= new Map()
+
+    const { data } = await axios(
+      `https://api.nomics.com/v1/exchange-rates?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}`
+    )
+
+    global.cache.set("cacheTime", new Date())
+    global.cache.set("exchanges", data)
+    return cache
+  } catch (err) {
+    console.log("Error on nomics API")
+    console.log(err)
+    throw err
   }
 }
 
-const memoizedAxiosGet = memo(axios.get)
-
 export const toFiat = async (cryptoString, fiatCurrency = "USD") => {
   try {
-    const { data } = await memoizedAxiosGet(
-      `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&ids=${cryptoString}&interval=1d&convert=${fiatCurrency}`
-    )
+    const data = global.cache.get("exchanges")
 
     return data
   } catch (e) {
-    console.log("Something went wrong!")
+    console.log("Error Fetching Fiats")
     console.log(e)
+    throw e
   }
 }
