@@ -49,22 +49,17 @@ const UnSignedNav = () => (
     </Col>
     <Col xs={0} sm={12}>
       <ul>
-        <li>
+        <li key={0}>
           <Link href="/about">
             <a>About</a>
           </Link>
         </li>
-        <li>
-          <Link href="/blog">
-            <a>Blog</a>
-          </Link>
-        </li>
-        <li>
+        <li key={1}>
           <Link href="/login">
             <a>Login</a>
           </Link>
         </li>
-        <li>
+        <li key={2}>
           <Link href="/signup">
             <a>Sign Up</a>
           </Link>
@@ -88,14 +83,14 @@ const SignedNav = ({ session, logoutMutation }) => (
     </Col>
     <Col xs={0} sm={12}>
       <ul>
-        <li>
-          <Link href="/accounts">
-            <a>Accounts</a>
-          </Link>
-        </li>
-        <li>
+        <li key={0}>
           <Link href={`/users/${session.userId}`}>
             <a>Dashboard</a>
+          </Link>
+        </li>
+        <li key={1}>
+          <Link href={`/users/${session.userId}/edit`}>
+            <a>Profile</a>
           </Link>
         </li>
         <li>

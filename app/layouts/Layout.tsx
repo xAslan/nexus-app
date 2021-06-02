@@ -27,7 +27,7 @@ export const DashboardLayout = ({ title, children }: LayoutProps) => {
       <Head>
         <title>{title || "Nexus Finance"}</title>
       </Head>
-      <DashboardNavBar />
+      <NavBar />
       {children}
       <Footer />
     </>

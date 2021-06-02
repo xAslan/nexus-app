@@ -4,12 +4,15 @@ import { Link, useRouter, useQuery, useMutation, useParam, BlitzPage } from "bli
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
 import UserForm from "app/users/components/UserForm"
+import ProfilePage from "app/users/components/profilePage"
 
 export const EditUser = () => {
   const router = useRouter()
   const userId = useParam("userId", "number")
   const [user, { setQueryData }] = useQuery(getUser, { where: { id: userId } })
   const [updateUserMutation] = useMutation(updateUser)
+  console.log("User ID")
+  console.log(userId)
 
   return (
     <div>
@@ -41,7 +44,7 @@ const EditUserPage: BlitzPage = () => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <EditUser />
+        <ProfilePage />
       </Suspense>
 
       <p>
