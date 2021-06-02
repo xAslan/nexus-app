@@ -38,7 +38,7 @@ const getChartData = (holdingsAgg = []) => {
     const sortedCryptoCoin = holdingsAgg.sort((a, b) => b["fiatAmount"] - a["fiatAmount"])
 
     return _.map(sortedCryptoCoin, (holding) => ({
-      chartLabel: holding?.asset?.name! || holding.label,
+      chartLabel: holding?.asset?.symbol! || holding.label,
       chartProgress: holding.fiatAmount,
     }))
   } else if (holdingsAgg.length >= 6) {
@@ -49,7 +49,7 @@ const getChartData = (holdingsAgg = []) => {
       (acc, holding, idx) => {
         if (idx <= 3) {
           return acc.concat({
-            chartLabel: holding.asset.name,
+            chartLabel: holding.asset.symbol,
             chartProgress: holding.fiatAmount,
           })
         }

@@ -1,19 +1,16 @@
 import { resolver } from "blitz"
 import db from "db"
 import * as z from "zod"
-import Plaid from "plaid"
+import plaidClientInit from "app/accounts/utils/plaid-init"
 
-const client = new Plaid.Client({
-  clientID: process.env.PLAID_CLIENT_ID,
-  secret: process.env.PLAID_SANDBOX_SECRET,
-  env: Plaid.environments.sandbox,
-})
+const plaidClient = plaidClientInit()
 
 const getAccessToken = (publicToken) => {
   return new Promise((resolve, reject) => {
-    client.exchangePublicToken(publicToken, (err, token) => {
+    plaidClient.exchangePublicToken(publicToken, (err, token) => {
       if (err != null) {
         reject(err)
+        console.log(err)
       }
 
       resolve(token)
@@ -27,36 +24,12 @@ const SetAccessToken = z
   })
   .nonstrict()
 
-//- Checks to see if there is accessToken & returns it
-
-//- Otherwise
-
-//- Creates the access token & save it
-
 export default resolver.pipe(
   resolver.zod(SetAccessToken),
   resolver.authorize(),
   async (input, ctx) => {
     const userId = ctx.session.userId
     const PUBLIC_TOKEN = input.token
-
-    /*
-     * Returning same token on requests gives same
-     * Bank information for every new request.
-     *
-    const userObject = await db.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        plaidToken: true,
-      },
-    })
-
-    if (userObject.plaidToken != null) {
-      return userObject.plaidToken
-    }
-    */
 
     try {
       const { access_token } = await getAccessToken(PUBLIC_TOKEN)
@@ -70,9 +43,11 @@ export default resolver.pipe(
         },
       })
 
+      console.log("Access Token")
+      console.log(access_token)
+
       return access_token
     } catch (err) {
-      console.log("Something webt wronnggg")
       console.error(err)
     }
   }

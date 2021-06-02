@@ -7,6 +7,7 @@ import {
 import db from "db"
 import { compareArrayObjects } from "utils/utils"
 import balanceCron from "app/api/balanceCron"
+import storeTransactions from "app/transactions/utils/create"
 
 //- TODO: invention of control
 //- Generate everything and make the saving logic here not in another file.
@@ -15,6 +16,7 @@ export default async function createAccount({ data }, ctx: Ctx) {
   ctx.session.$authorize()
 
   const zabo = await zaboInit()
+  const { userId } = ctx.session
 
   const { zaboUser, ...accountDataRaw } = data
   const { accountType, ...accountData } = accountDataRaw
@@ -24,20 +26,26 @@ export default async function createAccount({ data }, ctx: Ctx) {
       ? await zabo.users.addAccount(zaboUser, accountData)
       : await zabo.users.create(accountData)
 
-  const comparedObjs = compareArrayObjects(zaboUser, zaboUserObj)
+  const zaboObj = compareArrayObjects(zaboUser, zaboUserObj)
 
-  //- Expecting to return {...all stuff, fiatAmount}
-  // toFiat(accountData.balances, "USD")
+  const zaboAccountId = Array.isArray(zaboObj?.accounts) ? zaboObj.accounts[0].id : zaboObj.id
 
   const { account } =
     data.balances.length > 1
-      ? await createMultipleHoldingsAccount(accountData, comparedObjs, ctx, accountType)
-      : await createSingleHoldingAccount(accountData, comparedObjs, ctx, accountType)
+      ? await createMultipleHoldingsAccount(accountData, zaboAccountId, userId, accountType)
+      : await createSingleHoldingAccount(accountData, zaboAccountId, userId, accountType)
 
-  await db.user.update({
+  const user = await db.user.update({
     where: { id: account.userId },
     data: { zaboUserObj },
   })
+
+  const transactions = await zabo.transactions.getList({
+    userId: zaboUserObj.id,
+    accountId: account.zaboAccountId,
+  })
+
+  const localTrx = await storeTransactions(transactions.data, account.id)
 
   await balanceCron.enqueue(account.id, {
     repeat: {

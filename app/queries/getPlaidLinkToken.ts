@@ -1,17 +1,13 @@
 import { resolver } from "blitz"
 import db from "db"
 import * as z from "zod"
-import Plaid from "plaid"
+import plaidInit from "app/accounts/utils/plaid-init"
 
 const GetPlaidLinkToken = z.object({
   id: z.number(),
 })
 
-const client = new Plaid.Client({
-  clientID: process.env.PLAID_CLIENT_ID,
-  secret: process.env.PLAID_SANDBOX_SECRET,
-  env: Plaid.environments.sandbox,
-})
+const client = plaidInit()
 
 export default resolver.pipe(resolver.authorize(), async (input, { session }) => {
   const clientUserId = session.userId

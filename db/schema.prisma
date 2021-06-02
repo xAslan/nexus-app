@@ -8,7 +8,7 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["groupBy"]
+  previewFeatures = ["groupBy", "createMany"]
 }
 
 // --------------------------------------
@@ -74,6 +74,7 @@ model Account {
   lastSyncEnd     DateTime?     @map("last_sync_end")
   balances        Balance[]
   syncStatus      String        @default("inactive") @map("sync_status")
+  transactions    Transaction[]
   @@map("account")
 }
 
@@ -139,6 +140,28 @@ model Asset {
   address   String  @default("0")
   @@unique(fields: [symbol, address], name: "symbolAddress")
   @@map("asset")
+}
+
+model Transaction {
+  id                  String          @id
+  confirmedAt         DateTime        @default(now()) @map("confirmed_at")
+  account             Account         @relation(fields: [accountId], references: [id])
+  accountId           Int             
+  amountReceived      Float           @map("amount_received") @default(0)
+  amountSent          Float           @map("amount_sent") @default(0)
+  currencyReceived    String?         @map("currency_received")
+  currencySent        String?         @map("currency_sent")
+  trxType             TransactionType @default(OTHER) @map("trx_type")
+  parties             Json?
+
+  @@map("transcation")
+}
+
+enum TransactionType{
+  WITHDRAWAL
+  TRADE
+  DEPOSIT
+  OTHER
 }
 
 enum AssetType {

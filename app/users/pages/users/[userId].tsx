@@ -1,4 +1,4 @@
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import { Space, Button, Row, Col } from "antd"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
@@ -15,23 +15,7 @@ import TotalAmount from "app/users/components/totalAmount"
 import BanksList from "app/users/components/banksList"
 import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
-
-const valueOfAccount = [
-  { timestamp: 1612869664000, value: 200 },
-  { timestamp: 1612626757000, value: 300 },
-  { timestamp: 1612540357000, value: 350 },
-  { timestamp: 1612194757000, value: 400 },
-  { timestamp: 1611589957000, value: 315 },
-  { timestamp: 1607594617000, value: 321 },
-  { timestamp: 1610985157000, value: 233 },
-  { timestamp: 1602342837000, value: 333 },
-  { timestamp: 1612977237000, value: 231 },
-  { timestamp: 1610380357000, value: 412 },
-  { timestamp: 1610121157000, value: 344 },
-  { timestamp: 1588949557000, value: 550 },
-  { timestamp: 1581177157000, value: 553 },
-  { timestamp: 1549641157000, value: 512 },
-]
+import _ from "lodash"
 
 export const UserPageComponent = () => {
   const userId = useParam("userId", "number")
@@ -42,11 +26,53 @@ export const UserPageComponent = () => {
     include: {
       institution: true,
       subAccounts: { include: { holdings: { include: { asset: true } } } },
+      transactions: true,
+      balances: true,
     },
   })
 
+  const getSumBalances = (balance = []) => {
+    const keys = _.uniqBy(balance, (o) => o.timestamp)
+
+    return _.map(keys, ({ timestamp }) => {
+      const balanceByDate = _.filter(balance, (o) => o.timestamp === timestamp)
+
+      return _.reduce(
+        balanceByDate,
+        (acc, curr) => {
+          const balanceSum = curr.value + acc.value
+          return { ...curr, value: balanceSum }
+        },
+        { value: 0 }
+      )
+    })
+  }
+
   const renderAccounts = (accounts = []) => {
     if (accounts.length > 0) {
+      const trxObj = accounts.reduce(
+        (acc, { transactions, institution }) => acc.concat({ transactions, institution }),
+        []
+      )
+
+      const unsortedTrx = trxObj.reduce((acc, { transactions, institution }) => {
+        const innTrx = transactions.map((tr) => {
+          return { ...tr, institution: institution.name }
+        })
+
+        return acc.concat(innTrx)
+      }, [])
+
+      const balances = accounts.reduce((acc, { balances }) => {
+        const balancesObj = balances.map((b) => ({ timestamp: b.balanceDate, value: b.amount }))
+        return acc.concat(balancesObj)
+      }, [])
+
+      const balanceSum = getSumBalances(balances)
+      const transactions = unsortedTrx.sort(
+        (a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime()
+      )
+
       return (
         <AggregateProvider accounts={accounts}>
           <Row justify="center" style={{ marginTop: "1.2em" }}>
@@ -59,10 +85,10 @@ export const UserPageComponent = () => {
                 <Col xs={24} md={12}>
                   <Row justify="space-between">
                     <Col xs={24}>
-                      <LineChart valueOfAccount={valueOfAccount} />
+                      <LineChart valueOfAccount={balanceSum} />
                     </Col>
                     <Col xs={24}>
-                      <TransactionsTable />
+                      <TransactionsTable transactions={transactions} />
                     </Col>
                   </Row>
                 </Col>

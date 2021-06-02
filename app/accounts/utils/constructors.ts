@@ -1,8 +1,6 @@
 import { Prisma } from "db"
 
 export function holdingsConstructor(data, currentBalance, assetType = "CRYPTO") {
-  console.log("Current balance object holdings")
-  console.log(currentBalance)
   return {
     holdings: {
       create: {
@@ -30,8 +28,8 @@ export function holdingsConstructor(data, currentBalance, assetType = "CRYPTO") 
 
 export function accountObjConstructor(
   data,
-  zaboObj,
-  ctx,
+  zaboAccountId,
+  userId,
   currentBalance,
   accountType,
   assetType = "CRYPTO"
@@ -40,7 +38,7 @@ export function accountObjConstructor(
     name: data.provider.display_name,
     type: accountType,
     zaboToken: data?.token!,
-    zaboAccountId: zaboObj.id,
+    zaboAccountId,
     wallet: {
       create: {
         symbol: currentBalance.ticker,
@@ -87,7 +85,7 @@ export function accountObjConstructor(
     },
     user: {
       connect: {
-        id: ctx.session.userId,
+        id: userId,
       },
     },
   }

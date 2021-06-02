@@ -5,16 +5,13 @@ import Plaid from "plaid"
 import inspect from "object-inspect"
 import { createSinglePlaidAccount, createMultipleSubAccounts } from "app/accounts/utils/create"
 import { promisify } from "utils/utils"
+import plaidClientInit from "app/accounts/utils/plaid-init"
 
-const client = new Plaid.Client({
-  clientID: process.env.PLAID_CLIENT_ID,
-  secret: process.env.PLAID_SANDBOX_SECRET,
-  env: Plaid.environments.sandbox,
-})
+const plaidClient = plaidClientInit()
 
 const getInstitutionsPromise = (institutionId, countryCodes) => {
   return new Promise((resolve, reject) => {
-    client.getInstitutionById(institutionId, countryCodes, (err, institution) => {
+    plaidClient.getInstitutionById(institutionId, countryCodes, (err, institution) => {
       if (err != null) {
         reject(err)
       }
@@ -26,7 +23,7 @@ const getInstitutionsPromise = (institutionId, countryCodes) => {
 
 const getAccountsPromise = (token) => {
   return new Promise((resolve, reject) => {
-    client.getAccounts(token, (err, accountsData) => {
+    plaidClient.getAccounts(token, (err, accountsData) => {
       if (err != null) {
         reject(err)
       }
@@ -47,7 +44,7 @@ export default resolver.pipe(
   resolver.zod(CreatePlaidAccount),
   resolver.authorize(),
   async (input, ctx) => {
-    const userId = ctx.session.userId
+    const { userId } = ctx.session
     const { accessToken, accountType } = input
     const countryCodes = ["US", "GB"]
 
@@ -64,8 +61,8 @@ export default resolver.pipe(
 
       const accountResponse =
         accountsResponse.accounts.length > 1
-          ? await createMultipleSubAccounts(newAccountsObject, ctx, accountType)
-          : await createSinglePlaidAccount(newAccountsObject, ctx, accountType)
+          ? await createMultipleSubAccounts(newAccountsObject, userId, accountType)
+          : await createSinglePlaidAccount(newAccountsObject, userId, accountType)
 
       return accountResponse
     } catch (err) {

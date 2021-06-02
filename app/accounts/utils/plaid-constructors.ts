@@ -32,7 +32,7 @@ export function subAccountsConstructor(currentAccount, assetType = "FIAT") {
   }
 }
 
-export function accountsConstructor(data, ctx, currentAccount, accountType, assetType = "FIAT") {
+export function accountsConstructor(data, userId, currentAccount, accountType, assetType = "FIAT") {
   return {
     name: data.institution.name,
     type: accountType,
@@ -83,7 +83,7 @@ export function accountsConstructor(data, ctx, currentAccount, accountType, asse
     },
     user: {
       connect: {
-        id: ctx.session.userId,
+        id: userId,
       },
     },
   }

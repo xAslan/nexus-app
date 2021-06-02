@@ -7,7 +7,6 @@ import syncAccount from "app/accounts/mutations/syncAccount"
 import AccountView from "app/accounts/components/accountsView"
 import { Spin, Row, Col, Space } from "antd"
 import RightPane from "app/accounts/components/rightPane"
-
 import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
 import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
@@ -37,8 +36,20 @@ export const Account = () => {
     include: {
       institution: true,
       subAccounts: { include: { holdings: { include: { asset: true } } } },
+      transactions: true,
+      balances: true,
     },
   })
+
+  const balances = account.balances.map((b) => {
+    return { timestamp: b.createdAt, value: b.amount }
+  })
+
+  const unsortedTrx = account.transactions.map((trx) => {
+    return { ...trx, institution: account.institution.name }
+  })
+
+  const transactions = unsortedTrx.sort((a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime())
 
   return (
     <AggregateProvider accounts={account}>
@@ -51,10 +62,10 @@ export const Account = () => {
             <Col xs={24} md={12}>
               <Row justify="space-between">
                 <Col xs={24}>
-                  <LineChart valueOfAccount={valueOfAccount} />
+                  <LineChart valueOfAccount={balances} />
                 </Col>
                 <Col xs={24}>
-                  <TransactionsTable />
+                  <TransactionsTable transactions={transactions} />
                 </Col>
               </Row>
             </Col>

@@ -1,5 +1,7 @@
 import { Input } from "antd"
 import * as styled from "app/users/components/styles"
+import { transactionTypes } from "app/transactions/utils/types"
+import _ from "lodash"
 
 const transactionData = [
   {
@@ -46,31 +48,65 @@ const transactionData = [
   },
 ]
 
-const TransactionsTable = () => {
+interface TransactionTableProps {
+  date: Date
+  bank: String
+  trxType: TransactionTypes
+  amount: Float
+}
+
+const getAmount = ({ amountSent, amountReceived }) => {
+  if (amountSent > amountReceived) {
+    return amountSent
+  }
+
+  return amountReceived
+}
+
+const renderDescription = (rec) => {
+  if (rec.trxType === transactionTypes.TRADE) {
+    return `Traded ${rec.currencySent} / ${rec.currencyReceived}`
+  }
+
+  const direction = rec.trxType === transactionTypes.DEPOSIT ? `in Account` : `from Account`
+
+  return `${_.capitalize(rec.trxType)} ${direction}`
+}
+
+const TransactionsTable = (props) => {
   const trascationColumns = [
     {
       title: "Date",
-      dataIndex: "date",
+      dataIndex: "confirmedAt",
+      width: 100,
+      render: (text, record) => text.toLocaleDateString(),
     },
     {
       title: "Description",
       dataIndex: "description",
-      width: 300,
+      width: 250,
+      render: (_, record) => {
+        return `${renderDescription(record)}`
+      },
     },
     {
-      title: "Bank",
-      dataIndex: "bank",
+      title: "Insitution",
+      dataIndex: "institution",
+      render: (_, record) => record.institution,
     },
     {
       title: "Categories",
-      dataIndex: "categories",
-      width: 110,
+      dataIndex: "trxType",
+      width: 150,
     },
     {
       title: "Amount",
       dataIndex: "amount",
-      width: 100,
-      render: (text, record) => <p> ${text} </p>,
+      width: 120,
+      render: (text, record) => {
+        const amount = getAmount(record)
+        return <p> ${amount.toLocaleString("en")} </p>
+      },
     },
   ]
 
@@ -85,7 +121,7 @@ const TransactionsTable = () => {
         </header>
       )}
       columns={trascationColumns}
-      dataSource={transactionData}
+      dataSource={props.transactions}
       scroll={{ y: 240 }}
     />
   )

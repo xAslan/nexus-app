@@ -1,36 +1,11 @@
-/*
-  Warnings:
+-- CreateEnum
+CREATE TYPE "TransactionType" AS ENUM ('WITHDRAWAL', 'TRADE', 'DEPOSIT', 'OTHER');
 
-  - You are about to drop the `Account` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Asset` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Holding` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Institution` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Session` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `SubAccount` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `User` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `Wallet` table. If the table is not empty, all the data it contains will be lost.
+-- CreateEnum
+CREATE TYPE "AssetType" AS ENUM ('CRYPTO', 'FIAT', 'STOCK', 'OTHER');
 
-*/
--- DropForeignKey
-ALTER TABLE "Account" DROP CONSTRAINT "Account_institutionId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Account" DROP CONSTRAINT "Account_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Holding" DROP CONSTRAINT "Holding_assetId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Holding" DROP CONSTRAINT "Holding_subAccountId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Session" DROP CONSTRAINT "Session_userId_fkey";
-
--- DropForeignKey
-ALTER TABLE "SubAccount" DROP CONSTRAINT "SubAccount_accountId_fkey";
-
--- DropForeignKey
-ALTER TABLE "Wallet" DROP CONSTRAINT "Wallet_accountId_fkey";
+-- CreateEnum
+CREATE TYPE "AccountType" AS ENUM ('BLOCKCHAIN_WALLET', 'TRADITIONAL_BANK', 'TRADITIONAL_BROKERAGE', 'TRADITIONAL_CREDIT', 'CRYPTO_EXCHANGE', 'CRYPTO_SERVICE', 'UNKNOWN');
 
 -- CreateTable
 CREATE TABLE "user" (
@@ -98,6 +73,18 @@ CREATE TABLE "account" (
 );
 
 -- CreateTable
+CREATE TABLE "Balance" (
+    "id" SERIAL NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "balanceDate" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "accountId" INTEGER NOT NULL,
+
+    PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "wallet" (
     "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -140,35 +127,27 @@ CREATE TABLE "asset" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "name" TEXT NOT NULL,
+    "type" "AssetType" NOT NULL DEFAULT E'OTHER',
     "symbol" TEXT NOT NULL,
     "address" TEXT NOT NULL DEFAULT E'0',
 
     PRIMARY KEY ("id")
 );
 
--- DropTable
-DROP TABLE "Account";
+-- CreateTable
+CREATE TABLE "transcation" (
+    "id" TEXT NOT NULL,
+    "confirmed_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "accountId" INTEGER NOT NULL,
+    "amount_received" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "amount_sent" DOUBLE PRECISION NOT NULL DEFAULT 0,
+    "currency_received" TEXT,
+    "currency_sent" TEXT,
+    "trx_type" "TransactionType" NOT NULL DEFAULT E'OTHER',
+    "parties" JSONB,
 
--- DropTable
-DROP TABLE "Asset";
-
--- DropTable
-DROP TABLE "Holding";
-
--- DropTable
-DROP TABLE "Institution";
-
--- DropTable
-DROP TABLE "Session";
-
--- DropTable
-DROP TABLE "SubAccount";
-
--- DropTable
-DROP TABLE "User";
-
--- DropTable
-DROP TABLE "Wallet";
+    PRIMARY KEY ("id")
+);
 
 -- CreateIndex
 CREATE UNIQUE INDEX "user.email_unique" ON "user"("email");
@@ -180,7 +159,7 @@ CREATE UNIQUE INDEX "session.handle_unique" ON "session"("handle");
 CREATE UNIQUE INDEX "institution.short_name_unique" ON "institution"("short_name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "account.zabo_account_id_userId_unique" ON "account"("zabo_account_id", "userId");
+CREATE UNIQUE INDEX "dateAccountIdBalance" ON "Balance"("balanceDate", "accountId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "wallet_account_id_unique" ON "wallet"("account_id");
@@ -198,6 +177,9 @@ ALTER TABLE "account" ADD FOREIGN KEY ("institutionId") REFERENCES "institution"
 ALTER TABLE "account" ADD FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "Balance" ADD FOREIGN KEY ("accountId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "wallet" ADD FOREIGN KEY ("account_id") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -208,3 +190,6 @@ ALTER TABLE "holding" ADD FOREIGN KEY ("asset_id") REFERENCES "asset"("id") ON D
 
 -- AddForeignKey
 ALTER TABLE "holding" ADD FOREIGN KEY ("sub_account_id") REFERENCES "sub_account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transcation" ADD FOREIGN KEY ("accountId") REFERENCES "account"("id") ON DELETE CASCADE ON UPDATE CASCADE;
