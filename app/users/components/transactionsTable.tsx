@@ -3,51 +3,6 @@ import * as styled from "app/users/components/styles"
 import { transactionTypes } from "app/transactions/utils/types"
 import _ from "lodash"
 
-const transactionData = [
-  {
-    date: "12/12/2018",
-    description: "Internal Paid Marketing related",
-    bank: "Ally Bank",
-    categories: "Interest",
-    amount: "1000",
-  },
-  {
-    date: "12/12/2018",
-    description: "Internal Paid Marketing related",
-    bank: "Chase Bank",
-    categories: "Icome",
-    amount: "1500",
-  },
-  {
-    date: "12/12/2019",
-    description: "Internal Paid Marketing related",
-    bank: "Binance Bank",
-    categories: "Interest",
-    amount: "4000",
-  },
-  {
-    date: "12/05/2020",
-    description: "Internal Paid Marketing related",
-    bank: "Ally Bank",
-    categories: "Expense",
-    amount: "200",
-  },
-  {
-    date: "12/01/2019",
-    description: "Internal Paid Marketing related",
-    bank: "Chase Bank",
-    categories: "Icome",
-    amount: "3500",
-  },
-  {
-    date: "12/12/2019",
-    description: "Internal Paid Marketing related",
-    bank: "Binance",
-    categories: "Interest",
-    amount: "500",
-  },
-]
-
 interface TransactionTableProps {
   date: Date
   bank: String
@@ -78,7 +33,7 @@ const TransactionsTable = (props) => {
     {
       title: "Date",
       dataIndex: "confirmedAt",
-      width: 100,
+      width: 120,
       render: (text, record) => text.toLocaleDateString(),
     },
     {
@@ -97,7 +52,7 @@ const TransactionsTable = (props) => {
     {
       title: "Categories",
       dataIndex: "trxType",
-      width: 150,
+      width: 120,
     },
     {
       title: "Amount",

@@ -161,6 +161,9 @@ enum TransactionType{
   WITHDRAWAL
   TRADE
   DEPOSIT
+  DIGITAL
+  PLACE
+  SPECIAL
   OTHER
 }
 
