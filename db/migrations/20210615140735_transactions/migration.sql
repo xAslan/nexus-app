@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "TransactionType" AS ENUM ('WITHDRAWAL', 'TRADE', 'DEPOSIT', 'OTHER');
+CREATE TYPE "TransactionType" AS ENUM ('WITHDRAWAL', 'TRADE', 'DEPOSIT', 'DIGITAL', 'PLACE', 'SPECIAL', 'OTHER');
 
 -- CreateEnum
 CREATE TYPE "AssetType" AS ENUM ('CRYPTO', 'FIAT', 'STOCK', 'OTHER');

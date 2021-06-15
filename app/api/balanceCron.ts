@@ -5,6 +5,7 @@ import {
   getFiatAmounts as getAccountFiats,
 } from "app/accounts/utils/getAccountSums"
 import moment from "moment"
+import { accountTypes } from "app/accounts/utils/accountTypes"
 
 export default Queue("api/balanceCron", async (accountId: number) => {
   //- Get account
@@ -21,6 +22,7 @@ export default Queue("api/balanceCron", async (accountId: number) => {
 
     const accountsSums = await getAccountAssetsAmount(account)
     const accountFiats = await getAccountFiats(accountsSums)
+
     const date = moment().format("YYYY-MM-DD")
 
     const balance = await db.balance.upsert({

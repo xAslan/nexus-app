@@ -100,7 +100,9 @@ export const UserPageComponent = () => {
                     <PieDoughnutChart
                       title="Crypto Currencies"
                       type="Doughnut"
-                      filter={(holding) => holding.asset.type === "CRYPTO"}
+                      filter={(holding) => {
+                        return holding.asset.type === "CRYPTO" && holding.fiatAmount > 0
+                      }}
                     />
                   </Space>
                 </Col>

@@ -15,7 +15,7 @@ import LineChart from "app/components/LineChart"
 
 export const Account = () => {
   const accountId = useParam("accountId", "number")
-  const [user] = useQuery(getCurrentUser, {})
+  const [user] = useQuery(getCurrentUser, null)
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
     include: {
@@ -60,7 +60,9 @@ export const Account = () => {
                 <PieDoughnutChart
                   title="Crypto Currencies"
                   type="Doughnut"
-                  filter={(holding) => holding.asset.type === "CRYPTO"}
+                  filter={(holding) => {
+                    return holding.asset.type === "CRYPTO" && holding.fiatAmount > 0
+                  }}
                 />
               </Space>
             </Col>

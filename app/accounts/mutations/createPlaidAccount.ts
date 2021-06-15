@@ -6,6 +6,7 @@ import { createSinglePlaidAccount, createMultipleSubAccounts } from "app/account
 import { promisify } from "utils/utils"
 import plaidClientInit from "app/accounts/utils/plaid-init"
 import saveTrx from "app/transactions/utils/createPlaidTrx"
+import balanceCron from "app/api/balanceCron"
 
 const plaidClient = plaidClientInit()
 
@@ -76,6 +77,12 @@ export default resolver.pipe(
       )
 
       const trx = await saveTrx(transactions, accountResponse.id)
+
+      await balanceCron.enqueue(accountResponse.id, {
+        repeat: {
+          cron: "*/3 * * * *",
+        },
+      })
 
       return accountResponse
     } catch (err) {
