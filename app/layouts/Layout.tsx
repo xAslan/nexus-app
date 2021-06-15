@@ -1,6 +1,7 @@
-import { ReactNode } from "react"
+import { ReactNode, Suspense } from "react"
 import { Head } from "blitz"
 import { NavBar, DashboardNavBar } from "./components/NavBar"
+import Header from "app/layouts/components/tailwind"
 import Footer from "./components/Footer"
 
 type LayoutProps = {
@@ -14,8 +15,9 @@ const NormalLayout = ({ title, children }: LayoutProps) => {
       <Head>
         <title>{title || "Nexus Finance"}</title>
       </Head>
-      <NavBar />
-      {children}
+      <Header />
+
+      <div className="mt-20">{children}</div>
       <Footer />
     </>
   )
@@ -27,8 +29,8 @@ export const DashboardLayout = ({ title, children }: LayoutProps) => {
       <Head>
         <title>{title || "Nexus Finance"}</title>
       </Head>
-      <NavBar />
-      {children}
+      <Header />
+      <div className="mt-20">{children}</div>
       <Footer />
     </>
   )
