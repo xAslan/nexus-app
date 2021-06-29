@@ -23,6 +23,7 @@ export const Account = () => {
       subAccounts: { include: { holdings: { include: { asset: true } } } },
       transactions: true,
       balances: true,
+      user: true,
     },
   })
 

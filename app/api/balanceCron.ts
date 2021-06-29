@@ -33,10 +33,10 @@ export default Queue("api/balanceCron", async (accountId: number) => {
         },
       },
       update: {
-        amount: accountFiats.holdingsSum,
+        amount: accountFiats?.holdingsSum,
       },
       create: {
-        amount: accountFiats.holdingsSum,
+        amount: accountFiats?.holdingsSum,
         balanceDate: date,
         account: {
           connect: {

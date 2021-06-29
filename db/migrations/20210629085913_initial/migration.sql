@@ -65,7 +65,6 @@ CREATE TABLE "account" (
     "userId" INTEGER NOT NULL,
     "zabo_account_id" TEXT,
     "last_sync" TIMESTAMP(3),
-    "last_sync_end" TIMESTAMP(3),
     "sync_status" TEXT NOT NULL DEFAULT E'inactive',
     "institutionId" INTEGER,
 
@@ -111,14 +110,14 @@ CREATE TABLE "sub_account" (
 
 -- CreateTable
 CREATE TABLE "holding" (
+    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "asset_id" INTEGER NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
-    "fiat_amount" DOUBLE PRECISION NOT NULL DEFAULT 0,
     "sub_account_id" INTEGER NOT NULL,
 
-    PRIMARY KEY ("asset_id","sub_account_id")
+    PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -163,6 +162,9 @@ CREATE UNIQUE INDEX "dateAccountIdBalance" ON "Balance"("balanceDate", "accountI
 
 -- CreateIndex
 CREATE UNIQUE INDEX "wallet_account_id_unique" ON "wallet"("account_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "subAccountUniqAsset" ON "holding"("asset_id", "sub_account_id");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "symbolAddress" ON "asset"("symbol", "address");

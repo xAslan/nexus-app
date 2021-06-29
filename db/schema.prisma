@@ -71,7 +71,6 @@ model Account {
   userId          Int          
   zaboAccountId   String?       @map("zabo_account_id")
   lastSync        DateTime?     @map("last_sync")
-  lastSyncEnd     DateTime?     @map("last_sync_end")
   balances        Balance[]
   syncStatus      String        @default("inactive") @map("sync_status")
   transactions    Transaction[]
@@ -115,20 +114,17 @@ model SubAccount {
 }
 
 model Holding {
+  id            Int      @default(autoincrement()) @id
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   asset         Asset   @relation(fields: [assetId], references: [id])
   assetId       Int     @map("asset_id")
   amount        Float
-  fiatAmount    Float   @default(0) @map("fiat_amount")
   subAccount    SubAccount  @relation(fields: [subAccountId], references: [id])
   subAccountId  Int         @map("sub_account_id")
-  @@id([assetId, subAccountId])
+  @@unique(fields: [assetId, subAccountId], name: "subAccountUniqAsset")
   @@map("holding")
 }
-
-//- Removed the compound unique on [address, symbol]
-//- It was impossible to use connectOrCreate
 
 model Asset {
   id        Int      @default(autoincrement()) @id

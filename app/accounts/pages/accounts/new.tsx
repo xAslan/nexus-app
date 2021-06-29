@@ -31,7 +31,7 @@ const AccTypeForms = () => {
           const newAccount = await createAccountMutation({
             data: {
               ...account,
-              zaboUser: user.zaboUserObj!,
+              zaboUser: user?.zaboUserObj!,
               accountType: type,
             },
           })
@@ -49,7 +49,7 @@ const AccTypeForms = () => {
           const newAccount = await createAccountMutation({
             data: {
               ...account,
-              zaboUser: user.zaboUserObj!,
+              zaboUser: user?.zaboUserObj!,
               accountType: type,
             },
           })
@@ -65,7 +65,7 @@ const AccTypeForms = () => {
       default: {
         try {
           const plaidAccount = await createPlaidAccountMutation({
-            accessToken: plaidAccessToken,
+            accessToken: plaidAccessToken!,
             accountType: type,
           })
 

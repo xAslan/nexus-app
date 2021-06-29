@@ -1,85 +1,150 @@
-import { Ctx } from "blitz"
+import { resolver, Ctx } from "blitz"
 import db from "db"
-// import { wait } from "utils/utils"
-import Zabo from "zabo-sdk-js"
-//import updateAccount from "./updateAccount"
-//const { spawn } = require('child_process')
-// var ccxt = require("ccxt")
+import * as z from "zod"
+import { accountTypes } from "app/accounts/utils/accountTypes"
+import zaboInit from "app/accounts/utils/zabo-init"
+import plaidClientInit from "app/accounts/utils/plaid-init"
+import _ from "lodash"
 
-type SyncAccountInput = {
-  accountId: number
-  lastSync: Date
-}
-export default async function syncAccount({ accountId, lastSync }: SyncAccountInput, ctx: Ctx) {
-  const account = await db.account.findUnique({
-    where: { id: accountId },
-    include: { institution: true },
-  })
+const SyncAccount = z.object({
+  accountId: z.number(),
+  accountType: z.string(),
+  userId: z.string(),
+  zaboAccountId: z.string().optional(),
+  token: z.string().optional(),
+})
 
-  const zabo = await Zabo.init({
-    apiKey: process.env.ZABO_API_KEY,
-    secretKey: process.env.ZABO_SECRET,
-    env: "sandbox",
-  })
+export default resolver.pipe(
+  resolver.zod(SyncAccount),
+  resolver.authorize(),
+  async (input, ctx: Ctx) => {
+    if (input.accountType === accountTypes.TRADITIONAL_BANKS) {
+      const plaidClient = plaidClientInit()
+      const { accounts } = await plaidClient.getBalance(input.token!)
+      const { accountId, userId } = input
 
-  console.log(zabo.getTeam())
-  console.log(account)
+      await db.account.update({
+        where: {
+          id: accountId,
+        },
+        data: {
+          syncStatus: "active",
+        },
+      })
 
-  //const institution = account?.institution
-  //if (!account) throw new Error("no account found with account id")
-  //if (!institution)
-  //  throw new Error("Account cannot be synced because it has no institution to sync to")
-  //if (institution.authType == "api" && (!account?.apiKey || !account?.apiSecret))
-  //  throw new Error("No API Credentials")
-  //ctx.session.authorize()
-  //let holdings = []
-  ////spawn('./syncAccount', 'cats') spawn child process to update account
-  //const exchangeId = institution.shortName,
-  //  exchangeClass = ccxt[exchangeId],
-  //  exchange = new exchangeClass({
-  //    apiKey: account.apiKey,
-  //    secret: account.apiSecret,
-  //    timeout: 30000,
-  //    enableRateLimit: true,
-  //  })
-  // const balance = await exchange.fetchBalance({ params: {} })
-  // const trades = await exchange.fetchMyTrades("BNB/BNB")
-  // const uniqueTrades = await [...new Map(trades.map(transObj => [transObj["side"], transObj])).values()]
+      const accountIds = _.flatMap(accounts, (curr) => curr.account_id)
+      const subAccounts = await db.subAccount.findMany({
+        where: {
+          clientAccountId: { in: accountIds },
+        },
+        include: {
+          holdings: { include: { asset: true } },
+        },
+      })
 
-  // console.log(trades)
+      const newHoldings = accounts.reduce((acc, curr) => {
+        const [oneAcc] = subAccounts.filter((subAcc) => {
+          if (subAcc.clientAccountId === curr.account_id) {
+            return subAcc
+          }
+        })
 
-  // const newBal = Object.fromEntries(
-  //   Object.entries(balance["total"]).filter(([key, value]) => value > 0)
-  // )
+        const holds = {
+          holdingId: oneAcc.holdings[0]["id"],
+          assetId: oneAcc.holdings[0]["asset"]["id"],
+          amount: curr.balances.available || curr.balances.current,
+          subAccountId: oneAcc.id,
+        }
 
-  // Object.keys(newBal).forEach((symbol) => {
-  //   let holding = { name: "holdingName", symbol, amount: parseFloat(newBal[symbol]) }
-  //   let holdingUpsert = {
-  //     create: holding,
-  //     update: holding,
-  //     where: { symbol_accountId: { symbol, accountId: account.id } },
-  //   }
-  //   holdings.push(holdingUpsert)
-  //   console.log(holdingUpsert)
-  // })
-  // console.log("start timer")
-  // wait(1000)
-  // console.log("end timer")
-  // console.log(holdings)
-  // const updated_account = await db.account.update({
-  //   where: { id: account.id },
-  //   data: {
-  //     lastSync,
-  //     lastSyncEnd: new Date(),
-  //     syncStatus: "inactive",
-  //     holdings: { upsert: holdings },
-  //   },
-  //   include: { holdings: true },
-  // })
-  // return updated_account
-}
+        return acc.concat(holds)
+      }, [])
 
-/*export function syncAccountJob (hello) {
+      const updatedHoldingsPrs = await newHoldings.map(
+        async ({ assetId, subAccountId, amount }) => {
+          return await db.holding.update({
+            where: {
+              subAccountUniqAsset: {
+                assetId,
+                subAccountId,
+              },
+            },
+            data: { amount },
+          })
+        }
+      )
 
-    console.log('child process', hello)
-}*/
+      const updatedHoldings = await Promise.all(updatedHoldingsPrs)
+
+      await db.account.update({
+        where: {
+          id: accountId,
+        },
+        data: {
+          lastSync: new Date(),
+          syncStatus: "inactive",
+        },
+      })
+
+      return { updatedHoldings }
+    } else {
+      const zaboClient = await zaboInit()
+      const { accountId, zaboAccountId, userId } = input
+      const balances = await zaboClient.users.getBalances({ accountId: zaboAccountId, userId })
+
+      await db.account.update({
+        where: {
+          id: accountId,
+        },
+        data: {
+          syncStatus: "active",
+        },
+      })
+
+      const [subAccount] = await db.subAccount.findMany({
+        where: { accountId },
+        include: { holdings: { include: { asset: true } } },
+      })
+      const newHoldings = subAccount.holdings.map((holding) => {
+        const [newBalances] = balances.data
+          .map((balance) => {
+            if (balance.ticker === holding.asset.symbol) {
+              return {
+                holdingId: holding.id,
+                assetId: holding.asset.id,
+                amount: Number.parseFloat(balance.amount),
+              }
+            }
+          })
+          .filter((o) => o)
+
+        return newBalances
+      })
+
+      const updatedHoldingsPrs = await newHoldings.map(async (holding) => {
+        return await db.holding.update({
+          where: {
+            subAccountUniqAsset: {
+              assetId: holding.assetId,
+              subAccountId: subAccount.id,
+            },
+          },
+          data: { amount: holding.amount },
+        })
+      })
+
+      const updatedHoldings = Promise.all(updatedHoldingsPrs)
+
+      await db.account.update({
+        where: {
+          id: accountId,
+        },
+        data: {
+          lastSync: new Date(),
+          syncStatus: "inactive",
+        },
+      })
+
+      return updatedHoldings
+    }
+  }
+)

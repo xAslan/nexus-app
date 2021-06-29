@@ -5,7 +5,6 @@ export function holdingsConstructor(data, currentBalance, assetType = "CRYPTO") 
     holdings: {
       create: {
         amount: Number.parseFloat(currentBalance.amount),
-        fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
         asset: {
           connectOrCreate: {
             where: {
@@ -50,7 +49,6 @@ export function accountObjConstructor(
         holdings: {
           create: {
             amount: Number.parseFloat(currentBalance.amount),
-            fiatAmount: Number.parseFloat(currentBalance.fiat_value) || 0,
             asset: {
               connectOrCreate: {
                 where: {

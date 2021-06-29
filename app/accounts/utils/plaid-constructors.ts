@@ -9,7 +9,6 @@ export function subAccountsConstructor(currentAccount, assetType = "FIAT") {
         holdings: {
           create: {
             amount: Number.parseFloat(currentAccount.balances.current),
-            fiatAmount: Number.parseFloat(currentAccount.balances.available) || 0,
             asset: {
               connectOrCreate: {
                 where: {
@@ -49,7 +48,6 @@ export function accountsConstructor(data, userId, currentAccount, accountType, a
         holdings: {
           create: {
             amount: Number.parseFloat(currentAccount.balances.current),
-            fiatAmount: Number.parseFloat(currentAccount.balances.available) || 0,
             asset: {
               connectOrCreate: {
                 where: {
