@@ -9,7 +9,7 @@ import _ from "lodash"
 const SyncAccount = z.object({
   accountId: z.number(),
   accountType: z.string(),
-  userId: z.string(),
+  userId: z.string().optional(),
   zaboAccountId: z.string().optional(),
   token: z.string().optional(),
 })

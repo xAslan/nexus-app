@@ -24,6 +24,9 @@ export const getAssetsAmounts = (account) => {
             accountId: subAccount.accountId,
             institution: account.institution,
             asset: holding.asset,
+            lastSync: account.lastSync,
+            user: account.user,
+            zaboAccId: account.zaboAccountId,
           }
         } else {
           return {
@@ -33,6 +36,9 @@ export const getAssetsAmounts = (account) => {
             accountId: subAccount.accountId,
             institution: account.institution,
             asset: holding.asset,
+            lastSync: account.lastSync,
+            user: account.user,
+            zaboAccId: account.zaboAccountId,
           }
         }
       })
