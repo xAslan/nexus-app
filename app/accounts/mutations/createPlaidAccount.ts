@@ -1,7 +1,5 @@
 import { resolver } from "blitz"
-import db from "db"
 import * as z from "zod"
-import inspect from "object-inspect"
 import { createSinglePlaidAccount, createMultipleSubAccounts } from "app/accounts/utils/create"
 import plaidClientInit from "app/accounts/utils/plaid-init"
 import saveTrx from "app/transactions/utils/createPlaidTrx"
@@ -75,17 +73,15 @@ export default resolver.pipe(
         { account_ids: accountIds }
       )
 
-      const trx = await saveTrx(transactions, accountResponse.id)
+      await saveTrx(transactions, accountResponse.id)
 
-      if (process.env.APP_ENV === "staging") {
-        console.log("Staging enviroment quirrel")
+      if (process.env.APP_ENV === "production") {
         await balanceCron.enqueue(accountResponse.id, {
           repeat: {
-            cron: "*/2 * * * *",
+            cron: "0 */12 * * *",
           },
         })
       } else {
-        console.log("Other enviroment quirrel")
         await balanceCron.enqueue(accountResponse.id, {
           repeat: {
             cron: "*/3 * * * *",

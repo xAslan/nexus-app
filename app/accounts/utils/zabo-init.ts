@@ -1,11 +1,5 @@
 import Zabo from "zabo-sdk-js"
 
-console.log("Initializinng Zabo")
-console.log("Current Node Enviroment")
-console.log(process.env.NODE_ENV)
-console.log("App env")
-console.log(process.env.APP_ENV)
-
 export default async function zaboInit() {
   const zabo = await Zabo.init({
     apiKey:

@@ -47,11 +47,21 @@ export default async function createAccount({ data }, ctx: Ctx) {
 
   const localTrx = await storeTransactions(transactions.data, account.id)
 
-  await balanceCron.enqueue(account.id, {
-    repeat: {
-      cron: "*/3 * * * *",
-    },
-  })
+  if (process.env.APP_ENV === "production") {
+    await balanceCron.enqueue(accountResponse.id, {
+      repeat: {
+        cron: "0 */12 * * *",
+      },
+    })
 
-  return account
+    return account
+  } else {
+    await balanceCron.enqueue(account.id, {
+      repeat: {
+        cron: "*/3 * * * *",
+      },
+    })
+
+    return account
+  }
 }

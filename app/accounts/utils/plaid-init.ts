@@ -1,12 +1,6 @@
 import Plaid from "plaid"
 
 export default function plaidInit() {
-  console.log("Initializinng Plaid")
-  console.log("Current Node Enviroment")
-  console.log(process.env.NODE_ENV)
-  console.log("App env")
-  console.log(process.env.APP_ENV)
-
   const someVar = {
     clientID: process.env.PLAID_CLIENT_ID,
 

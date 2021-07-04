@@ -3,7 +3,7 @@ import { getExchanges } from "app/accounts/utils/exchange"
 
 export default CronJob(
   "api/exchangesCron",
-  `${process.env.APP_ENV === "staging" ? "* * * * *" : "*/5 * * * *"}`,
+  `${process.env.APP_ENV === "production" ? "0 */2 * * *" : "* * * * *"}`,
   async (job) => {
     await getExchanges()
   }
