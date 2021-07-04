@@ -1,13 +1,19 @@
 import Zabo from "zabo-sdk-js"
 
+console.log("Initializinng Zabo")
+console.log("Current Node Enviroment")
+console.log(process.env.NODE_ENV)
+console.log("App env")
+console.log(process.env.APP_ENV)
+
 export default async function zaboInit() {
   const zabo = await Zabo.init({
     apiKey:
-      process.env.NODE_ENV === "production"
+      process.env.APP_ENV === "production"
         ? process.env.ZABO_PROD_API_KEY
         : process.env.ZABO_DEV_API_KEY,
     secretKey:
-      process.env.NODE_ENV === "production"
+      process.env.APP_ENV === "production"
         ? process.env.ZABO_PROD_SECRET
         : process.env.ZABO_DEV_SECRET,
     env: process.env.NODE_ENV === "production" ? "live" : "sandbox",
@@ -19,9 +25,9 @@ export default async function zaboInit() {
 export const zaboClientInit = async () => {
   return await Zabo.init({
     clientId:
-      process.env.NODE_ENV === "production"
+      process.env.APP_ENV === "production"
         ? process.env.NEXT_PUBLIC_ZABO_PROD_CLIENT_ID
         : process.env.NEXT_PUBLIC_ZABO_DEV_CLIENT_ID,
-    env: process.env.NODE_ENV === "production" ? "live" : "sandbox",
+    env: process.env.APP_ENV === "production" ? "live" : "sandbox",
   })
 }

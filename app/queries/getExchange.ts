@@ -5,7 +5,7 @@ import { getExchanges } from "app/accounts/utils/exchange"
 
 const GetExchange = z.object({})
 
-export default resolver.pipe(resolver.zod(GetExchange), resolver.authorize(), async (input) => {
+export default resolver.pipe(resolver.zod(GetExchange), async (input) => {
   if (typeof global.cache !== "undefined" && global.cache.size > 0) {
     return global.cache.get("exchanges")
   }
