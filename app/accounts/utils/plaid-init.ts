@@ -1,7 +1,10 @@
 import Plaid from "plaid"
 
+//TODO: Change to Plaid.environments.production after you've gone live
+//TODO Change all other references to PLAID_PROD which actually refer to DEV
+
 export default function plaidInit() {
-  const someVar = {
+  const plaidEnvConfig = {
     clientID: process.env.PLAID_CLIENT_ID,
 
     secret:
@@ -13,13 +16,13 @@ export default function plaidInit() {
 
     env:
       process.env.APP_ENV === "production"
-        ? Plaid.environments.production
+        ? Plaid.environments.development
         : process.env.APP_ENV === "development"
         ? Plaid.environments.development
         : Plaid.environments.sandbox, //- Sandbox, dev, production
   }
 
-  const client = new Plaid.Client(someVar)
+  const client = new Plaid.Client(plaidEnvConfig)
 
   return client
 }

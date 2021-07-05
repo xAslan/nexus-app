@@ -20,7 +20,7 @@ export const zaboClientInit = async () => {
   return await Zabo.init({
     clientId:
       process.env.APP_ENV === "production"
-        ? process.env.NEXT_PUBLIC_ZABO_PROD_CLIENT_ID
+        ? process.env.NEXT_PUBLIC_ZABO_CLIENT_ID
         : process.env.NEXT_PUBLIC_ZABO_DEV_CLIENT_ID,
     env: process.env.APP_ENV === "production" ? "live" : "sandbox",
   })
