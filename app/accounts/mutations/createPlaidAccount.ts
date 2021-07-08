@@ -75,20 +75,6 @@ export default resolver.pipe(
 
       await saveTrx(transactions, accountResponse.id)
 
-      if (process.env.APP_ENV === "production") {
-        await balanceCron.enqueue(accountResponse.id, {
-          repeat: {
-            cron: "0 */12 * * *",
-          },
-        })
-      } else {
-        await balanceCron.enqueue(accountResponse.id, {
-          repeat: {
-            cron: "*/3 * * * *",
-          },
-        })
-      }
-
       return accountResponse
     } catch (err) {
       console.error(err)

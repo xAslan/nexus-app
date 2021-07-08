@@ -24,6 +24,7 @@ model User {
   sessions        Session[]
   plaidToken      String?       @map("plaid_token")
   zaboUserObj     Json?         @map("zabo_user_obj")
+  account         Account[]
   primaryCurrency String        @default("USD") @map("primary_currency")
   @@map("user")
 }
@@ -67,8 +68,8 @@ model Account {
   type            AccountType       //manual, blockchain_wallet, institution, defi ENUM
   wallet          Wallet?
   subAccounts     SubAccount[]
-  user            User          @relation(fields: [userId], references: [id])
-  userId          Int          
+  user            User?          @relation(fields: [userId], references: [id])
+  userId          Int?          
   zaboAccountId   String?       @map("zabo_account_id")
   lastSync        DateTime?     @map("last_sync")
   balances        Balance[]

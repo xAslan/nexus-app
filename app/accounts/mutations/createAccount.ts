@@ -6,7 +6,6 @@ import {
 } from "app/accounts/utils/create"
 import db from "db"
 import { compareArrayObjects } from "utils/utils"
-import balanceCron from "app/api/balanceCron"
 import storeTransactions from "app/transactions/utils/create"
 
 //- TODO: invention of control
@@ -47,21 +46,5 @@ export default async function createAccount({ data }, ctx: Ctx) {
 
   const localTrx = await storeTransactions(transactions.data, account.id)
 
-  if (process.env.APP_ENV === "production") {
-    await balanceCron.enqueue(accountResponse.id, {
-      repeat: {
-        cron: "0 */12 * * *",
-      },
-    })
-
-    return account
-  } else {
-    await balanceCron.enqueue(account.id, {
-      repeat: {
-        cron: "*/3 * * * *",
-      },
-    })
-
-    return account
-  }
+  return account
 }

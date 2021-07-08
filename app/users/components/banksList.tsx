@@ -8,6 +8,7 @@ import _ from "lodash"
 import toast, { Toaster } from "react-hot-toast"
 import { accountTypes } from "app/accounts/utils/accountTypes"
 import syncAccount from "app/accounts/mutations/syncAccount"
+import syncAccounts from "app/accounts/mutations/syncAccounts"
 
 interface banksListProps {
   title?: string
@@ -57,6 +58,11 @@ const BanksList = (props: banksListProps) => {
         }
       }
     )
+
+    const handleSyncAll = async () => {
+      await invoke(syncAccounts)
+      toast.success("Sync All Accounts Complete!")
+    }
 
     const renderMultiple = (holdingsArray = [], renderAssets = false, holdings = []) => {
       if (renderAssets) {
@@ -154,12 +160,22 @@ const BanksList = (props: banksListProps) => {
         </div>
 
         {props.hasButton && (
-          <button
-            className="mt-10 inline-flex items-center px-2.5 py-1.5 border border-transparent shadow-sm text-md font-medium rounded text-white bg-green-500 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            onClick={() => router.push("/accounts/new")}
-          >
-            Link Account
-          </button>
+          <div className="flex flex-col space-y-4">
+            <button
+              className="self-center mt-10 inline-flex items-center px-2.5 py-1.5 border border-transparent shadow-sm text-md font-medium rounded text-white bg-green-500 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              onClick={() => router.push("/accounts/new")}
+            >
+              <strong>Link Accounts</strong>
+            </button>
+
+            <button
+              className="self-center inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
+              onClick={handleSyncAll}
+            >
+              <strong>Sync All Accounts</strong>
+              <RefreshIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
         )}
       </>
     )

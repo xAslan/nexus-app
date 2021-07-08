@@ -1,52 +1,18 @@
-import { Queue } from "quirrel/blitz"
 import db from "db"
-import {
-  getAssetsAmounts as getAccountAssetsAmount,
-  getFiatAmounts as getAccountFiats,
-} from "app/accounts/utils/getAccountSums"
-import moment from "moment"
-import { accountTypes } from "app/accounts/utils/accountTypes"
+import { CronJob } from "quirrel/blitz"
+import { syncAllUserAccounts } from "app/accounts/utils/accountSync"
 
-export default Queue("api/balanceCron", async (accountId: number) => {
-  //- Get account
-  try {
-    const account = await db.account.findFirst({
-      where: { id: accountId },
-      include: {
-        institution: true,
-        subAccounts: { include: { holdings: { include: { asset: true } } } },
-      },
+export default CronJob(
+  "api/balanceCron",
+  "0 5 */1 * *", //- everyday at 5 AM
+  async (job) => {
+    const allUsers = await db.user.findMany({ include: { Account: true } })
+    const users = allUsers.filter((user) => user.Account.length > 0)
+
+    await users.forEach(async ({ id }) => {
+      await syncAllUserAccounts(id)
     })
 
-    //- Get the current assets from zabo/plaid first
-
-    const accountsSums = await getAccountAssetsAmount(account)
-    const accountFiats = await getAccountFiats(accountsSums)
-
-    const date = moment().format("YYYY-MM-DD")
-
-    const balance = await db.balance.upsert({
-      where: {
-        dateAccountIdBalance: {
-          accountId,
-          balanceDate: date,
-        },
-      },
-      update: {
-        amount: accountFiats?.holdingsSum,
-      },
-      create: {
-        amount: accountFiats?.holdingsSum,
-        balanceDate: date,
-        account: {
-          connect: {
-            id: accountId,
-          },
-        },
-      },
-    })
-  } catch (err) {
-    console.log("Create Balance error")
-    console.error(err)
+    console.log("Done syncing all accounts ...")
   }
-})
+)
