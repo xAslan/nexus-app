@@ -2,8 +2,6 @@ import { resolver } from "blitz"
 import * as z from "zod"
 import { createSinglePlaidAccount, createMultipleSubAccounts } from "app/accounts/utils/create"
 import plaidClientInit from "app/accounts/utils/plaid-init"
-import saveTrx from "app/transactions/utils/createPlaidTrx"
-import balanceCron from "app/api/balanceCron"
 
 const plaidClient = plaidClientInit()
 
@@ -61,19 +59,6 @@ export default resolver.pipe(
         accountsResponse.accounts.length > 1
           ? await createMultipleSubAccounts(newAccountsObject, userId, accountType)
           : await createSinglePlaidAccount(newAccountsObject, userId, accountType)
-
-      const accountIds = accountResponse.subAccounts.map((curr) => {
-        return curr.clientAccountId
-      })
-
-      const { transactions } = await plaidClient.getTransactions(
-        accessToken,
-        "2018-01-01",
-        "2021-06-01",
-        { account_ids: accountIds }
-      )
-
-      await saveTrx(transactions, accountResponse.id)
 
       return accountResponse
     } catch (err) {

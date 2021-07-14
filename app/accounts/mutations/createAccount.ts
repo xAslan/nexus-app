@@ -6,7 +6,6 @@ import {
 } from "app/accounts/utils/create"
 import db from "db"
 import { compareArrayObjects } from "utils/utils"
-import storeTransactions from "app/transactions/utils/create"
 
 //- TODO: invention of control
 //- Generate everything and make the saving logic here not in another file.
@@ -38,13 +37,6 @@ export default async function createAccount({ data }, ctx: Ctx) {
     where: { id: account.userId },
     data: { zaboUserObj },
   })
-
-  const transactions = await zabo.transactions.getList({
-    userId: zaboUserObj.id,
-    accountId: account.zaboAccountId,
-  })
-
-  const localTrx = await storeTransactions(transactions.data, account.id)
 
   return account
 }

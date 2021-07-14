@@ -1,6 +1,7 @@
-import { Suspense } from "react"
+import { Suspense, useState, useEffect, useRef, useCallback } from "react"
 import Layout from "app/layouts/Layout"
-import { useQuery, useParam, BlitzPage } from "blitz"
+import { useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import createTransactions from "app/transactions/mutations/createTransaction"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
@@ -13,8 +14,17 @@ import { AggregateProvider } from "app/users/components/dashboardCtx"
 import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
 
+function sortTransactions(transactions, institution) {
+  const unsortedTrx = transactions.map((trx) => {
+    return { ...trx, institution: institution }
+  })
+
+  return unsortedTrx.sort((a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime())
+}
+
 export const Account = () => {
   const accountId = useParam("accountId", "number")
+  const mountedRef = useRef(true)
   const [user] = useQuery(getCurrentUser, null)
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
@@ -26,16 +36,43 @@ export const Account = () => {
       user: true,
     },
   })
+  const [createTransactionsMutation] = useMutation(createTransactions)
 
   const balances = account.balances.map((b) => {
     return { timestamp: b.createdAt, value: b.amount }
   })
 
-  const unsortedTrx = account.transactions.map((trx) => {
-    return { ...trx, institution: account.institution.name }
-  })
+  const trxLists = sortTransactions(account.transactions, account.institution.name)
+  const [transactions, setTransactions] = useState(trxLists)
 
-  const transactions = unsortedTrx.sort((a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime())
+  const fetchTrx = useCallback(async () => {
+    const plaidSubAccounts = account.subAccounts.map((curr) => {
+      return curr.clientAccountId
+    })
+
+    const trx = await createTransactionsMutation({
+      accountType: account.type,
+      zaboAccountId: account.zaboAccountId,
+      zaboUserId: account.user.zaboUserObj.id,
+      accountId: account.id,
+      plaidToken: account.user.plaidToken,
+      plaidSubAccounts,
+    })
+
+    const trxLists = sortTransactions(trx, account.institution.name)
+
+    if (!mountedRef.current) return null
+
+    setTransactions(trxLists)
+  }, [mountedRef])
+
+  useEffect(() => {
+    fetchTrx()
+
+    return () => {
+      mountedRef.current = false
+    }
+  }, [account])
 
   return (
     <AggregateProvider accounts={account}>

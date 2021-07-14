@@ -10,8 +10,12 @@ export default async function storeTransactions(trxArray, accountId) {
 const createMultipleTrx = async (trxArray) => {
   const transaction = await db.$transaction(
     trxArray.map((trxObj) => {
-      return db.transaction.create({
-        data: trxObj,
+      return db.transaction.upsert({
+        create: trxObj,
+        where: {
+          id: trxObj.id,
+        },
+        update: trxObj,
       })
     })
   )
