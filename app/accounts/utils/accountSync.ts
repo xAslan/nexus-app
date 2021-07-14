@@ -17,6 +17,9 @@ interface syncAccountArgs {
   token?: string
 }
 
+//- TODO: Reduce the number of network requests by grouping zabo & plaid accounts into
+//- one getBalance call.
+
 export async function syncAccount({
   token,
   accountType,
@@ -158,7 +161,7 @@ export async function syncAllUserAccounts(userId: number) {
   const user = await db.user.findFirst({
     where: { id: userId },
     include: {
-      Account: {
+      accounts: {
         include: {
           institution: true,
           subAccounts: { include: { holdings: { include: { asset: true } } } },
@@ -169,7 +172,7 @@ export async function syncAllUserAccounts(userId: number) {
     },
   })
 
-  const balanceData = await user.Account.map(async (account) => {
+  const balanceData = await user.accounts.map(async (account) => {
     const syncedAccount = await syncAccount({
       userId: user.zaboUserObj.id,
       zaboAccountId: account.zaboAccountId!,
