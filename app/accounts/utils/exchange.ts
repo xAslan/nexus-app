@@ -7,7 +7,7 @@ export const getExchanges = async (fiatCurrency = "USD") => {
     global.cache ??= new Map()
 
     const { data } = await axios(
-      `https://api.nomics.com/v1/exchange-rates?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}`
+      `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&interval=1d&convert=${fiatCurrency}&status=active`
     )
 
     global.cache.set("cacheTime", new Date())
@@ -20,14 +20,4 @@ export const getExchanges = async (fiatCurrency = "USD") => {
   }
 }
 
-export const toFiat = async (cryptoString, fiatCurrency = "USD") => {
-  try {
-    const data = global.cache.get("exchanges")
-
-    return data
-  } catch (e) {
-    console.log("Error Fetching Fiats")
-    console.log(e)
-    throw e
-  }
-}
+export const getCachedExchange = () => global.cache.get("exchanges")
