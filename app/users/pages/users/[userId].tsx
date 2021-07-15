@@ -4,6 +4,7 @@ import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
 import { useRouter, useQuery, useParam, BlitzPage } from "blitz"
 import { CenterContent } from "app/components/styles"
+import EmptyAccounts from "app/accounts/components/emptyResults"
 
 import getUser from "app/users/queries/getUser"
 import getAccounts from "app/accounts/queries/getAccounts"
@@ -116,12 +117,7 @@ export const UserPageComponent = () => {
 
     return (
       <CenterContent>
-        <section>
-          <p>Sorry, you need to at least have one account</p>
-          <Button type="primary" onClick={() => router.push("/accounts/new")}>
-            <strong>Create new account</strong>
-          </Button>
-        </section>
+        <EmptyAccounts />
       </CenterContent>
     )
   }
