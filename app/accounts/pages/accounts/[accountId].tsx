@@ -94,7 +94,7 @@ export const Account = () => {
   return (
     <AggregateProvider accounts={account}>
       <Row justify="center" style={{ marginTop: "1.2em" }}>
-        <Col xs={0} lg={22}>
+        <Col xs={22} lg={22}>
           <Row justify="space-between">
             <Col xs={24} md={8} lg={6}>
               <RightPane fiatCurrency={"GBP"} rates={fiatRates} account={account} />
