@@ -1,32 +1,6 @@
 import axios from "axios"
 import moment from "moment"
 
-const generateNomicsCache = async (fiatCurrency) => {
-  console.log("Generating cache ...")
-  try {
-    const res = await axios(
-      `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&interval=1h&convert=${fiatCurrency}&status=active`
-    )
-
-    if (res.status === 200) {
-      console.log("Got data from axios")
-
-      global.cache.set("cacheTime", new Date())
-      global.cache.set("exchanges", res.data)
-
-      console.log("Made the cache & returning...")
-      console.log(global.cache)
-      return global.cache
-    }
-
-    console.log("Error on nomics API response")
-    throw err
-  } catch (err) {
-    console.log("Error Querying Nomics API")
-    throw err
-  }
-}
-
 interface callAndCacheProps {
   requestURL: string
   cacheTimeLabel: string
@@ -38,13 +12,8 @@ const callAndCache = async ({ requestURL, cacheTimeLabel, cacheDataLabel }: call
     const res = await axios(requestURL)
 
     if (res.status === 200) {
-      console.log("Got data from axios")
-
       global.cache.set(cacheTimeLabel, new Date())
       global.cache.set(cacheDataLabel, res.data)
-
-      console.log("Made the cache & returning...")
-      console.log(global.cache)
       return global.cache
     }
 
@@ -56,13 +25,21 @@ const callAndCache = async ({ requestURL, cacheTimeLabel, cacheDataLabel }: call
   }
 }
 
-const cachingFn = async ({
+interface exchangesFnProps {
+  requestURL: string
+  cacheTimeLabel: string
+  cacheDataLabel: string
+  cacheTime: number
+  cacheTimeSIUnit: string
+}
+
+const exchangesFn = async ({
   cacheTimeLabel,
   cacheDataLabel,
   cacheTime,
   cacheTimeSIUnit,
   requestURL,
-}) => {
+}: exchangesFnProps) => {
   global.cache ??= new Map()
 
   if (typeof global.cache !== "undefined" && global.cache.size > 0) {
@@ -98,7 +75,7 @@ export const getExchanges = async (fiatCurrency = "USD") => {
   const cacheTime = 60
   const cacheTimeSIUnit = "minutes"
 
-  return await cachingFn({
+  return await exchangesFn({
     cacheDataLabel,
     cacheTimeLabel,
     cacheTime,
@@ -115,7 +92,7 @@ export const getFiatExchange = async () => {
   const cacheTime = 6
   const cacheTimeSIUnit = "hours"
 
-  return await cachingFn({
+  return await exchangesFn({
     cacheDataLabel,
     cacheTimeLabel,
     cacheTime,

@@ -35,6 +35,7 @@ const TransactionsTable = (props) => {
       dataIndex: "confirmedAt",
       width: 120,
       render: (text, record) => text.toLocaleDateString(),
+      responsive: ["md"],
     },
     {
       title: "Description",
@@ -43,16 +44,18 @@ const TransactionsTable = (props) => {
       render: (_, record) => {
         return `${renderDescription(record)}`
       },
+      responsive: ["lg"],
     },
     {
       title: "Insitution",
       dataIndex: "institution",
+      width: 150,
       render: (_, record) => record.institution,
     },
     {
       title: "Categories",
       dataIndex: "trxType",
-      width: 120,
+      width: 150,
     },
     {
       title: "Amount",

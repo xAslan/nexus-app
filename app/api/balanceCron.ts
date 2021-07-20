@@ -6,8 +6,8 @@ export default CronJob(
   "api/balanceCron",
   "0 5 */1 * *", //- everyday at 5 AM
   async (job) => {
-    const allUsers = await db.user.findMany({ include: { Account: true } })
-    const users = allUsers.filter((user) => user.Account.length > 0)
+    const allUsers = await db.user.findMany({ include: { accounts: true } })
+    const users = allUsers.filter((user) => user.accounts.length > 0)
 
     await users.forEach(async ({ id }) => {
       await syncAllUserAccounts(id)

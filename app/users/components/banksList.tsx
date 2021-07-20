@@ -1,4 +1,5 @@
-import { useRouter, invoke } from "blitz"
+import { useRouter, invoke, Link } from "blitz"
+import { useState } from "react"
 import { Skeleton, Input, List, Button, Row, Col, Card } from "antd"
 import * as styled from "app/users/components/styles"
 import { useAggregates } from "app/users/components/dashboardCtx"
@@ -20,8 +21,12 @@ interface banksListProps {
 const BanksList = (props: banksListProps) => {
   const { holdings } = useAggregates()
   const router = useRouter()
+  const [syncAccountsLoading, setSyncAccountsLoading] = useState(false)
+  const [syncAccountLoading, setSyncAccountLoading] = useState(false)
 
   const handleSync = async (account) => {
+    setSyncAccountLoading(true)
+
     if (account.institution.type === accountTypes.TRADITIONAL_BANKS) {
       const syncResponse = await invoke(syncAccount, {
         token: account.user.plaidToken,
@@ -31,6 +36,7 @@ const BanksList = (props: banksListProps) => {
 
       console.log(syncResponse)
       toast.success("Sync Complete!")
+      setSyncAccountLoading(false)
     } else {
       const syncResponse = await invoke(syncAccount, {
         zaboAccountId: account.zaboAccId,
@@ -41,6 +47,7 @@ const BanksList = (props: banksListProps) => {
 
       console.log(syncResponse)
       toast.success("Sync Complete!")
+      setSyncAccountLoading(false)
     }
   }
 
@@ -60,8 +67,10 @@ const BanksList = (props: banksListProps) => {
     )
 
     const handleSyncAll = async () => {
+      setSyncAccountsLoading(true)
       await invoke(syncAccounts)
       toast.success("Sync All Accounts Complete!")
+      setSyncAccountsLoading(false)
     }
 
     const renderMultiple = (holdingsArray = [], renderAssets = false, holdings = []) => {
@@ -102,16 +111,17 @@ const BanksList = (props: banksListProps) => {
                   key={accountId}
                   className="bg-white shadow overflow-hidden px-4 py-4 sm:px-6 sm:rounded-md space-y-2"
                 >
-                  <div className="flex-1 min-w-0">
-                    <p className="text-md font-bold text-gray-900 truncate">{accountName}</p>
-                  </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-900 truncate">Available Amount</p>
+                    <Link href={`/accounts/${accountId}`}>
+                      <a className="text-md font-bold inline-block text-gray-900 hover:text-green-600 truncate h-full w-3/4">
+                        {accountName}
+                      </a>
+                    </Link>
                     <p className="text-sm text-gray-500 truncate">
                       {"$" + totalAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
                     </p>
                   </div>
-                  <div class="flex justify-between">
+                  <div class="flex justify-between lg:flex-row flex-col">
                     <div>
                       <p>
                         Last Sync:{" "}
@@ -124,18 +134,10 @@ const BanksList = (props: banksListProps) => {
                         className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
                         onClick={() => handleSync(account)}
                       >
-                        Sync Now
+                        {syncAccountLoading ? "Syncing..." : "Sync Now"}
                         <RefreshIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
                       </button>
                     </div>
-                  </div>
-                  <div>
-                    <button
-                      className="inline-flex items-center px-2.5 py-1.5 border border-transparent shadow-sm text-md font-medium rounded text-white bg-green-500 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                      onClick={() => router.push(`/accounts/${accountId}`)}
-                    >
-                      View Institution
-                    </button>
                   </div>
                 </li>
               ))}
@@ -160,7 +162,7 @@ const BanksList = (props: banksListProps) => {
         </div>
 
         {props.hasButton && (
-          <div className="flex flex-col space-y-4">
+          <div className="flex flex-col space-y-4 mb-8">
             <button
               className="self-center mt-10 inline-flex items-center px-2.5 py-1.5 border border-transparent shadow-sm text-md font-medium rounded text-white bg-green-500 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
               onClick={() => router.push("/accounts/new")}
@@ -172,7 +174,7 @@ const BanksList = (props: banksListProps) => {
               className="self-center inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
               onClick={handleSyncAll}
             >
-              <strong>Sync All Accounts</strong>
+              <strong>{syncAccountsLoading ? "Syncing Accounts..." : "Sync All Accounts"}</strong>
               <RefreshIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
             </button>
           </div>

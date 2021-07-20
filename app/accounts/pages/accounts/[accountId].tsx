@@ -1,6 +1,6 @@
 import { Suspense, useState, useEffect, useRef, useCallback } from "react"
 import Layout from "app/layouts/Layout"
-import { useQuery, useParam, BlitzPage, useMutation } from "blitz"
+import { useQuery, useParam, BlitzPage, useMutation, invoke } from "blitz"
 import createTransactions from "app/transactions/mutations/createTransaction"
 import getAccount from "app/accounts/queries/getAccount"
 import deleteAccount from "app/accounts/mutations/deleteAccount"
@@ -13,6 +13,7 @@ import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
 import { DiffPieChart, PieDoughnutChart } from "app/components/PieDoughnutChart"
 import LineChart from "app/components/LineChart"
+import getExchange from "app/queries/getExchange"
 
 function sortTransactions(transactions, institution) {
   const unsortedTrx = transactions.map((trx) => {
@@ -26,6 +27,8 @@ export const Account = () => {
   const accountId = useParam("accountId", "number")
   const mountedRef = useRef(true)
   const [user] = useQuery(getCurrentUser, null)
+  const [fiatRates, setFiatRates] = useState({})
+  const [createTransactionsMutation] = useMutation(createTransactions)
   const [account, { setQueryData }] = useQuery(getAccount, {
     where: { id: accountId },
     include: {
@@ -36,7 +39,6 @@ export const Account = () => {
       user: true,
     },
   })
-  const [createTransactionsMutation] = useMutation(createTransactions)
 
   const balances = account.balances.map((b) => {
     return { timestamp: b.createdAt, value: b.amount }
@@ -66,8 +68,23 @@ export const Account = () => {
     setTransactions(trxLists)
   }, [mountedRef])
 
+  const getFiatExchange = useCallback(async () => {
+    try {
+      const fiats = await invoke(getExchange, { type: "FIAT" })
+
+      if (!mountedRef.current) return null
+
+      if (fiats.rates !== null) {
+        setFiatRates(fiats.rates)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }, [mountedRef])
+
   useEffect(() => {
     fetchTrx()
+    getFiatExchange()
 
     return () => {
       mountedRef.current = false
@@ -80,7 +97,7 @@ export const Account = () => {
         <Col xs={0} lg={22}>
           <Row justify="space-between">
             <Col xs={24} md={8} lg={6}>
-              <RightPane account={account} />
+              <RightPane fiatCurrency={"GBP"} rates={fiatRates} account={account} />
             </Col>
             <Col xs={24} md={12}>
               <Row justify="space-between">

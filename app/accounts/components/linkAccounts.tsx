@@ -15,6 +15,7 @@ export const AccountTypesForm = (props) => {
   const router = useRouter()
   const [plaidToken] = useQuery(getPlaidLinkToken, {})
   const [setAccessTokenMutation] = useMutation(setAccessToken)
+  const [loading, setLoading] = useState(false)
 
   const onPlaidSuccess = useCallback(async (token, metadata) => {
     const plaidAccessToken = await setAccessTokenMutation({ token })
@@ -38,6 +39,7 @@ export const AccountTypesForm = (props) => {
   const { open, ready, error } = usePlaidLink(plaidConfig)
 
   const connectWithZabo = async () => {
+    setLoading(true)
     const zabo = await zaboClientInit()
 
     zabo.connect().onConnection((account) => {
@@ -54,6 +56,8 @@ export const AccountTypesForm = (props) => {
         message.error("Something went wrong please try again later")
       }
     })
+
+    setLoading(false)
   }
 
   const handleSubmitError = (error) => {
@@ -78,15 +82,25 @@ export const AccountTypesForm = (props) => {
     switch (type) {
       case accountTypes.TRADITIONAL_BANKS: {
         return (
-          <Button onClick={open} disabled={!ready} block size="large" type="primary">
-            <strong>Continue with Plaid</strong>
+          <Button
+            onClick={() => {
+              setLoading(true)
+              open()
+              setLoading(false)
+            }}
+            disabled={!ready && loading}
+            block
+            size="large"
+            type="primary"
+          >
+            <strong>{loading ? "Loading Plaid..." : "Continue with Plaid"}</strong>
           </Button>
         )
       }
       case accountTypes.CRYPTO_EXCHANGE: {
         return (
-          <Button onClick={connectWithZabo} block size="large" type="primary">
-            <strong>Continue with Zabo</strong>
+          <Button disabled={loading} onClick={connectWithZabo} block size="large" type="primary">
+            <strong>{loading ? "Loading Zabo..." : "Continue with Zabo"}</strong>
           </Button>
         )
       }

@@ -11,7 +11,7 @@ const RightPaneComponent = (props) => {
 
   return (
     <>
-      <TotalAmount account={account} title={account.institution.name} />
+      <TotalAmount {...props} title={account.institution.name} />
       <BanksList title="Assets" hasButton={false} renderAssets={true} />
       <styled.CenteredButton>
         <Button

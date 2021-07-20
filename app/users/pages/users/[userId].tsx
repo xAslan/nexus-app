@@ -102,13 +102,13 @@ export const UserPageComponent = () => {
       return (
         <AggregateProvider accounts={accounts}>
           <Row justify="center" style={{ marginTop: "1.2em" }}>
-            <Col xs={0} lg={22}>
+            <Col xs={22} lg={22}>
               <Row justify="space-between">
                 <Col xs={24} md={8} lg={6}>
                   <TotalAmount rates={fiatRates} fiatCurrency={"GBP"} />
                   <BanksList hasButton={true} />
                 </Col>
-                <Col xs={24} md={12}>
+                <Col xs={24} md={15} lg={12}>
                   <Row justify="space-between">
                     <Col xs={24}>
                       <LineChart valueOfAccount={balanceSum} />
@@ -119,7 +119,7 @@ export const UserPageComponent = () => {
                   </Row>
                 </Col>
 
-                <Col xs={24} md={8} lg={5}>
+                <Col xs={24} md={12} lg={5}>
                   <Space direction="vertical">
                     <DiffPieChart title="Traditional VS Crypto" type="Pie" />
 
