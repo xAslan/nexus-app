@@ -88,7 +88,11 @@ export const getFiatExchange = async () => {
   const cacheDataLabel = "fiatExchanges"
   const cacheTimeLabel = "fiatCacheTime"
   const baseURL = "https://openexchangerates.org/api/"
-  const requestURL = `${baseURL}latest.json?app_id=${process.env.OPEN_EXCHANGES_DEV_APP_ID}`
+  const requestURL = `${baseURL}latest.json?app_id=${
+    process.env.APP_ENV === "production"
+      ? process.env.OPEN_EXCHANGES_PROD_APP_ID
+      : process.env.OPEN_EXCHANGES_DEV_APP_ID
+  }`
   const cacheTime = 6
   const cacheTimeSIUnit = "hours"
 
