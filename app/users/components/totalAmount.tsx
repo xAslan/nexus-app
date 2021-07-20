@@ -3,7 +3,10 @@ import { Skeleton } from "antd"
 import { useAggregates } from "app/users/components/dashboardCtx"
 
 const TotalAmount = (props) => {
+  const { rates, fiatCurrency } = props
   const { holdingsSum } = useAggregates()
+  const rate = props.rates[fiatCurrency] || 0
+  const ratedSum = rate * holdingsSum
 
   const renderSum = (sum = 0) => {
     if (sum > 0) {
@@ -23,7 +26,10 @@ const TotalAmount = (props) => {
 
           {!props.title && (
             <p>
-              <strong style={{ textDecoration: "strike" }}>&pound; 8,000</strong>
+              <strong style={{ textDecoration: "strike" }}>
+                &pound; &nbsp;
+                {ratedSum.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+              </strong>
               <span> 30 days </span>
             </p>
           )}

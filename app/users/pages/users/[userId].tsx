@@ -1,8 +1,9 @@
-import { Suspense, useState } from "react"
+import { Suspense, useState, useEffect, useCallback, useRef } from "react"
 import { Space, Button, Row, Col } from "antd"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
-import { useRouter, useQuery, useParam, BlitzPage } from "blitz"
+import { useRouter, useQuery, useParam, BlitzPage, invoke } from "blitz"
+import getExchange from "app/queries/getExchange"
 import { CenterContent } from "app/components/styles"
 import EmptyAccounts from "app/accounts/components/emptyResults"
 
@@ -22,6 +23,8 @@ export const UserPageComponent = () => {
   const userId = useParam("userId", "number")
   const router = useRouter()
   const [user] = useQuery(getUser, { where: { id: userId } })
+  const mountedRef = useRef(true)
+  const [fiatRates, setFiatRates] = useState({})
   const [{ accounts }] = useQuery(getAccounts, {
     where: { userId: user.id },
     include: {
@@ -32,6 +35,27 @@ export const UserPageComponent = () => {
       user: true,
     },
   })
+
+  const getFiatExchange = useCallback(async () => {
+    try {
+      const fiats = await invoke(getExchange, { type: "FIAT" })
+
+      if (!mountedRef.current) return null
+
+      if (fiats.rates !== null) {
+        setFiatRates(fiats.rates)
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  }, [mountedRef])
+
+  useEffect(() => {
+    getFiatExchange()
+    return () => {
+      mountedRef.current = false
+    }
+  }, [])
 
   const getSumBalances = (balance = []) => {
     const keys = _.uniqBy(balance, (o) => o.timestamp)
@@ -81,7 +105,7 @@ export const UserPageComponent = () => {
             <Col xs={0} lg={22}>
               <Row justify="space-between">
                 <Col xs={24} md={8} lg={6}>
-                  <TotalAmount />
+                  <TotalAmount rates={fiatRates} fiatCurrency={"GBP"} />
                   <BanksList hasButton={true} />
                 </Col>
                 <Col xs={24} md={12}>

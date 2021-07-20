@@ -20,7 +20,7 @@ export default resolver.pipe(
     const user = await db.user.findUnique({ where: { id: userId } })
 
     const transactions = await zabo.transactions.getList({
-      userId: user.zaboUserObj.id,
+      userId: user?.zaboUserObj?.id,
       accountId: input.accountId,
     })
 

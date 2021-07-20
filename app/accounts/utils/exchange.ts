@@ -1,23 +1,125 @@
 import axios from "axios"
 import moment from "moment"
-import exchangeCron from "app/api/exchangesCron"
 
-export const getExchanges = async (fiatCurrency = "USD") => {
+const generateNomicsCache = async (fiatCurrency) => {
+  console.log("Generating cache ...")
   try {
-    global.cache ??= new Map()
-
-    const { data } = await axios(
-      `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&interval=1d&convert=${fiatCurrency}&status=active`
+    const res = await axios(
+      `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&interval=1h&convert=${fiatCurrency}&status=active`
     )
 
-    global.cache.set("cacheTime", new Date())
-    global.cache.set("exchanges", data)
-    return cache
+    if (res.status === 200) {
+      console.log("Got data from axios")
+
+      global.cache.set("cacheTime", new Date())
+      global.cache.set("exchanges", res.data)
+
+      console.log("Made the cache & returning...")
+      console.log(global.cache)
+      return global.cache
+    }
+
+    console.log("Error on nomics API response")
+    throw err
   } catch (err) {
-    console.log("Error on nomics API")
-    console.log(err)
+    console.log("Error Querying Nomics API")
     throw err
   }
 }
 
-export const getCachedExchange = () => global.cache.get("exchanges")
+interface callAndCacheProps {
+  requestURL: string
+  cacheTimeLabel: string
+  cacheDataLabel: string
+}
+
+const callAndCache = async ({ requestURL, cacheTimeLabel, cacheDataLabel }: callAndCacheProps) => {
+  try {
+    const res = await axios(requestURL)
+
+    if (res.status === 200) {
+      console.log("Got data from axios")
+
+      global.cache.set(cacheTimeLabel, new Date())
+      global.cache.set(cacheDataLabel, res.data)
+
+      console.log("Made the cache & returning...")
+      console.log(global.cache)
+      return global.cache
+    }
+
+    console.log(`Error on Exchange API: ${cacheDataLabel}`)
+    throw err
+  } catch (err) {
+    console.log(`Error Querying: ${cacheDataLabel}`)
+    throw err
+  }
+}
+
+const cachingFn = async ({
+  cacheTimeLabel,
+  cacheDataLabel,
+  cacheTime,
+  cacheTimeSIUnit,
+  requestURL,
+}) => {
+  global.cache ??= new Map()
+
+  if (typeof global.cache !== "undefined" && global.cache.size > 0) {
+    const exchangesData = global.cache.get(cacheDataLabel) || []
+    const cacheLifeTime = moment(global.cache.get(cacheTimeLabel))
+    const cacheExpiryTime = moment().subtract(cacheTime, cacheTimeSIUnit)
+
+    if (exchangesData.length > 0 && cacheLifeTime.isAfter(cacheExpiryTime)) {
+      console.log("From Cache...")
+      return global.cache
+    }
+
+    console.log("Cache Expired...")
+    return await callAndCache({
+      cacheTimeLabel,
+      cacheDataLabel,
+      requestURL,
+    })
+  }
+
+  console.log("No Cache Found ...")
+  return await callAndCache({
+    cacheTimeLabel,
+    cacheDataLabel,
+    requestURL,
+  })
+}
+
+export const getExchanges = async (fiatCurrency = "USD") => {
+  const cacheDataLabel = "exchanges"
+  const cacheTimeLabel = "cacheTime"
+  const requestURL = `https://api.nomics.com/v1/currencies/ticker?key=${process.env.NEXT_PUBLIC_NOMICS_API_KEY}&interval=1h&convert=${fiatCurrency}&status=active`
+  const cacheTime = 60
+  const cacheTimeSIUnit = "minutes"
+
+  return await cachingFn({
+    cacheDataLabel,
+    cacheTimeLabel,
+    cacheTime,
+    cacheTimeSIUnit,
+    requestURL,
+  })
+}
+
+export const getFiatExchange = async () => {
+  const cacheDataLabel = "fiatExchanges"
+  const cacheTimeLabel = "fiatCacheTime"
+  const baseURL = "https://openexchangerates.org/api/"
+  const requestURL = `${baseURL}latest.json?app_id=${process.env.OPEN_EXCHANGES_DEV_APP_ID}`
+  const cacheTime = 6
+  const cacheTimeSIUnit = "hours"
+
+  return await cachingFn({
+    cacheDataLabel,
+    cacheTimeLabel,
+    cacheTime,
+    cacheTimeSIUnit,
+    requestURL,
+  })
+}

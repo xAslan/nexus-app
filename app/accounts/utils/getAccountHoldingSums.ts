@@ -51,10 +51,7 @@ export const getAssetsAmounts = (account) => {
 
 export const getFiatAmounts = async (uniqueHoldings = []) => {
   if (uniqueHoldings.length > 0) {
-    const exchangeData =
-      typeof global.cache === "undefined" || global?.cache?.size === 0
-        ? await invoke(getExchange, {})
-        : getCachedExchange()
+    const exchangeData = await invoke(getExchange, {})
 
     const included = _.reduce(
       uniqueHoldings,

@@ -53,10 +53,7 @@ export const getFiatAmounts = async (uniqueHoldings = []) => {
   if (uniqueHoldings.length > 0) {
     const arrayOfSymbols = _.flatMap(uniqueHoldings, ({ asset }) => asset.symbol)
 
-    const exchangeData =
-      typeof global?.cache?.size! === "undefined" || global?.cache?.size! === 0
-        ? await invoke(getExchange, {})
-        : getCachedExchange()
+    const exchangeData = await invoke(getExchange, {})
 
     const included = _.reduce(
       uniqueHoldings,
