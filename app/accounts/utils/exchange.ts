@@ -43,11 +43,11 @@ const exchangesFn = async ({
   global.cache ??= new Map()
 
   if (typeof global.cache !== "undefined" && global.cache.size > 0) {
-    const exchangesData = global.cache.get(cacheDataLabel) || []
+    const exchangesData = global.cache.get(cacheDataLabel) || null
     const cacheLifeTime = moment(global.cache.get(cacheTimeLabel))
     const cacheExpiryTime = moment().subtract(cacheTime, cacheTimeSIUnit)
 
-    if (exchangesData.length > 0 && cacheLifeTime.isAfter(cacheExpiryTime)) {
+    if (exchangesData !== null && cacheLifeTime.isAfter(cacheExpiryTime)) {
       console.log("From Cache...")
       return global.cache
     }
