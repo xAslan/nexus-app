@@ -105,7 +105,10 @@ export const UserPageComponent = () => {
             <Col xs={22} lg={22}>
               <Row justify="space-between">
                 <Col xs={24} md={8} lg={6}>
-                  <TotalAmount rates={fiatRates} fiatCurrency={"GBP"} />
+                  <TotalAmount
+                    rates={fiatRates}
+                    fiatCurrency={accounts[0]["user"]["secondaryCurrency"]}
+                  />
                   <BanksList hasButton={true} />
                 </Col>
                 <Col xs={24} md={15} lg={12}>
