@@ -14,18 +14,22 @@ generator client {
 // --------------------------------------
 
 model User {
-  id              Int       @id @default(autoincrement())
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  name            String?
-  email           String    @unique
-  hashedPassword  String?   @map("hashed_password")
-  role            String    @default("user")
-  sessions        Session[]
-  plaidToken      String?   @map("plaid_token")
-  zaboUserObj     Json?     @map("zabo_user_obj")
-  accounts        Account[]
-  primaryCurrency String    @default("USD") @map("primary_currency")
+  id                Int       @id @default(autoincrement())
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  name              String?
+  email             String    @unique
+  hashedPassword    String?   @map("hashed_password")
+  role              String    @default("user")
+  sessions          Session[]
+  profileImgURL     String?   @map("profile_img_url")
+  plaidToken        String?   @map("plaid_token")
+  zaboUserObj       Json?     @map("zabo_user_obj")
+  address           String?
+  phone             String?
+  accounts          Account[]
+  primaryCurrency   String    @default("USD") @map("primary_currency")
+  secondaryCurrency String @default("GBP") @map("secondary_currency")
 
   @@map("user")
 }

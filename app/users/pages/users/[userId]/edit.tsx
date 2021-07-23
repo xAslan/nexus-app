@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { Link, useRouter, useQuery, useMutation, useParam, BlitzPage } from "blitz"
+import { useRouter, useQuery, useMutation, useParam, BlitzPage } from "blitz"
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
 import UserForm from "app/users/components/UserForm"
@@ -11,8 +11,6 @@ export const EditUser = () => {
   const userId = useParam("userId", "number")
   const [user, { setQueryData }] = useQuery(getUser, { where: { id: userId } })
   const [updateUserMutation] = useMutation(updateUser)
-  console.log("User ID")
-  console.log(userId)
 
   return (
     <div>
@@ -42,17 +40,9 @@ export const EditUser = () => {
 
 const EditUserPage: BlitzPage = () => {
   return (
-    <div>
-      <Suspense fallback={<div>Loading...</div>}>
-        <ProfilePage />
-      </Suspense>
-
-      <p>
-        <Link href="/users">
-          <a>Users</a>
-        </Link>
-      </p>
-    </div>
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfilePage />
+    </Suspense>
   )
 }
 
