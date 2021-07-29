@@ -1,4 +1,6 @@
 import { useRouter, invoke, Link } from "blitz"
+import { useEffect } from "react"
+import getSubAccounts from "app/sub-accounts/queries/getSubAccounts"
 import { useState } from "react"
 import { Skeleton, Input, List, Button, Row, Col, Card } from "antd"
 import * as styled from "app/users/components/styles"
@@ -15,7 +17,7 @@ interface banksListProps {
   title?: string
   hasButton?: boolean
   renderAssets?: boolean
-  account?: any
+  account: any
 }
 
 const BanksList = (props: banksListProps) => {
@@ -75,75 +77,15 @@ const BanksList = (props: banksListProps) => {
 
     const renderMultiple = (holdingsArray = [], renderAssets = false, holdings = []) => {
       if (renderAssets) {
-        return (
-          <div>
-            <div className="flow-root mt-6">
-              <ul className="-my-5 divide-y px-4 divide-gray-200">
-                {holdings.map(({ asset, fiatAmount, amount }) => (
-                  <li key={asset.id} className="py-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex-shrink-0">
-                        <p className="h-8 w-8 rounded-full">{asset.symbol}</p>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-gray-900 truncate text-right">
-                          {amount}
-                        </p>
-                        <p className="text-sm text-gray-500 truncate text-right">
-                          {"$" + fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-                        </p>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )
+        return <SingleAccountList {...props} holdings={holdings} />
       }
 
       return (
-        <div>
-          <div className="flow-root">
-            <ul className="space-y-3">
-              {holdingsArray.map(({ accountName, totalAmount, accountId, lastSync, account }) => (
-                <li
-                  key={accountId}
-                  className="bg-white shadow overflow-hidden px-4 py-4 sm:px-6 sm:rounded-md space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <Link href={`/accounts/${accountId}`}>
-                      <a className="text-md font-bold inline-block text-gray-900 hover:text-green-600 truncate h-full w-3/4">
-                        {accountName}
-                      </a>
-                    </Link>
-                    <p className="text-sm text-gray-500 truncate">
-                      {"$" + totalAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
-                    </p>
-                  </div>
-                  <div class="flex justify-between lg:flex-row flex-col">
-                    <div>
-                      <p>
-                        Last Sync:{" "}
-                        {lastSync ? moment(lastSync).startOf("minute").fromNow() : "Never"}
-                      </p>
-                    </div>
-
-                    <div>
-                      <button
-                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
-                        onClick={() => handleSync(account)}
-                      >
-                        {syncAccountLoading ? "Syncing..." : "Sync Now"}
-                        <RefreshIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+        <MultipleAccountsList
+          holdingsArray={holdingsArray}
+          handleSync={handleSync}
+          syncAccountLoading={syncAccountLoading}
+        />
       )
     }
 
@@ -184,6 +126,92 @@ const BanksList = (props: banksListProps) => {
   }
 
   return renderList(holdings)
+}
+
+function SingleAccountList(props) {
+  const { account, holdings } = props
+
+  const renderList = (account = { subAccounts: [] }, holdings = []) => {
+    if (account.institution.type === accountTypes.TRADITIONAL_BANKS) {
+      return account.subAccounts.map(({ name, holdings }, idx) => (
+        <li key={idx} className="py-2">
+          <p className="truncate w-72 leading-8">{name}</p>
+          <div className="flex justify-between">
+            <p> Asset </p>
+
+            <p className="text-sm font-medium text-gray-900 truncate text-right">
+              {"$" + holdings[0].amount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+            </p>
+          </div>
+        </li>
+      ))
+    }
+
+    return holdings.map(({ asset, fiatAmount, amount }) => (
+      <li key={asset.id} className="py-4">
+        <div className="flex items-center space-x-4">
+          <div className="flex-shrink-0">
+            <p className="h-8 w-8 rounded-full">{asset.symbol}</p>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-gray-900 truncate text-right">{amount}</p>
+            <p className="text-sm text-gray-500 truncate text-right">
+              {"$" + fiatAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+            </p>
+          </div>
+        </div>
+      </li>
+    ))
+  }
+
+  return (
+    <div className="flow-root">
+      <ul className="divide-y divide-gray-200">{renderList(account, holdings)}</ul>
+    </div>
+  )
+}
+
+function MultipleAccountsList(props) {
+  return (
+    <div className="flow-root">
+      <ul className="space-y-3">
+        {props.holdingsArray.map(({ accountName, totalAmount, accountId, lastSync, account }) => (
+          <li
+            key={accountId}
+            className="bg-white shadow overflow-hidden px-4 py-4 sm:px-6 sm:rounded-md space-y-2"
+          >
+            <div className="flex items-center justify-between">
+              <Link href={`/accounts/${accountId}`}>
+                <a className="text-md font-bold inline-block text-gray-900 hover:text-green-600 truncate h-full w-3/4">
+                  {accountName}
+                </a>
+              </Link>
+              <p className="text-sm text-gray-500 truncate">
+                {"$" + totalAmount.toLocaleString("en-US", { maximumFractionDigits: 2 })}
+              </p>
+            </div>
+            <div class="flex justify-between lg:flex-row flex-col">
+              <div>
+                <p>
+                  Last Sync: {lastSync ? moment(lastSync).startOf("minute").fromNow() : "Never"}
+                </p>
+              </div>
+
+              <div>
+                <button
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-700"
+                  onClick={() => props.handleSync(account)}
+                >
+                  {props.syncAccountLoading ? "Syncing..." : "Sync Now"}
+                  <RefreshIcon className="ml-2 -mr-0.5 h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
 }
 
 export default BanksList

@@ -7,7 +7,8 @@ import deleteAccount from "app/accounts/mutations/deleteAccount"
 import syncAccount from "app/accounts/mutations/syncAccount"
 import getCurrentUser from "app/users/queries/getCurrentUser"
 import AccountView from "app/accounts/components/accountsView"
-import { Spin, Row, Col, Space } from "antd"
+import Loading from "app/components/loading"
+import { Row, Col, Space } from "antd"
 import RightPane from "app/accounts/components/rightPane"
 import TransactionsTable from "app/users/components/transactionsTable"
 import { AggregateProvider } from "app/users/components/dashboardCtx"
@@ -131,7 +132,7 @@ export const Account = () => {
 const ShowAccountPage: BlitzPage = () => {
   return (
     <>
-      <Suspense fallback={<Spin />}>
+      <Suspense fallback={<Loading loadingContent="Loading Dashboard" />}>
         <Account />
       </Suspense>
     </>

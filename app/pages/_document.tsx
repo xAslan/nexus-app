@@ -1,6 +1,7 @@
 import { Suspense } from "react"
 import { Document, Html, DocumentHead, Main, BlitzScript, DocumentContext } from "blitz"
 import { ServerStyleSheet } from "styled-components"
+import Loading from "app/components/loading"
 
 class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -10,11 +11,12 @@ class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) => sheet.collectStyles(
-            <Suspense fallback={<p> Loading ...</p>}>
-              <App {...props} />
-            </Suspense>
-          ),
+          enhanceApp: (App) => (props) =>
+            sheet.collectStyles(
+              <Suspense fallback={<p> Loading ...</p>}>
+                <App {...props} />
+              </Suspense>
+            ),
         })
 
       const initialProps = await Document.getInitialProps(ctx)

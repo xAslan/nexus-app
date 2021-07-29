@@ -1,9 +1,10 @@
 import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
+import Loading from "app/components/loading"
 import { useQuery, useRouter, useMutation, BlitzPage } from "blitz"
 import createAccount from "app/accounts/mutations/createAccount"
 import { AccountTypesForm } from "app/accounts/components/linkAccounts"
-import { Spin, message } from "antd"
+import { message } from "antd"
 import getCurrentUser from "app/users/queries/getCurrentUser"
 import { accountTypes } from "app/accounts/utils/accountTypes"
 import * as styled from "app/accounts/components/styles"
@@ -89,7 +90,7 @@ const AccTypeForms = () => {
 
 const NewAccountPage: BlitzPage = () => {
   return (
-    <Suspense fallback={<Spin />}>
+    <Suspense fallback={<Loading />}>
       <AccTypeForms />
     </Suspense>
   )
