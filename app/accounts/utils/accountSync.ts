@@ -8,6 +8,7 @@ import {
   getFiatAmounts as getAccountFiats,
 } from "app/accounts/utils/getAccountSums"
 import moment from "moment"
+import getTransactions from "app/transactions/utils"
 
 interface syncAccountArgs {
   accountId: number
@@ -184,6 +185,19 @@ export async function syncAllUserAccounts(userId: number) {
     const syncedBalance = await updateBalance(syncedAccount)
 
     return syncedBalance
+  })
+
+  const trxData = await user.accounts.map(async (account) => {
+    const accountIds = account.subAccounts.map(({ clientAccountId }) => clientAccountId)
+    const transactions = await getTransactions({
+      plaidToken: user.plaidToken,
+      lastSync: account.lastSync,
+      zaboAccountId: account.zaboAccountId,
+      accountType: account.type,
+      accountId: account.id,
+      zaboUserId: user.zaboUserObj.id,
+      accountIds,
+    })
   })
 
   return Promise.all(balanceData)
