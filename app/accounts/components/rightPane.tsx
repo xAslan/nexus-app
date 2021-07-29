@@ -13,16 +13,17 @@ const RightPaneComponent = (props) => {
     <>
       <TotalAmount {...props} title={account.institution.name} />
       <BanksList account={account} title="Assets" hasButton={false} renderAssets={true} />
-      <styled.CenteredButton>
-        <Button
-          style={{ marginTop: "1em" }}
+      <div className="flex justify-center mt-2">
+        <button
+          className="px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           block
+          type="button"
           size="large"
           onClick={() => router.push(`/users/${session.userId}`)}
         >
-          <strong>All Accounts</strong>
-        </Button>
-      </styled.CenteredButton>
+          <strong>View all Accounts</strong>
+        </button>
+      </div>
     </>
   )
 }
