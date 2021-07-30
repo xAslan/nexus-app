@@ -2,7 +2,7 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react"
 import { Space, Button, Row, Col } from "antd"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
-import { useRouter, useQuery, useParam, BlitzPage, invoke, useMutation } from "blitz"
+import { useRouter, useQuery, useSession, BlitzPage, invoke, useMutation } from "blitz"
 import getExchange from "app/queries/getExchange"
 import { CenterContent } from "app/components/styles"
 import EmptyAccounts from "app/accounts/components/emptyResults"
@@ -21,7 +21,7 @@ import LineChart from "app/components/LineChart"
 import _ from "lodash"
 
 export const UserPageComponent = () => {
-  const userId = useParam("userId", "number")
+  const { userId } = useSession()
   const router = useRouter()
   const [user] = useQuery(getUser, { where: { id: userId } })
   const mountedRef = useRef(true)
