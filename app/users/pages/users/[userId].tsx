@@ -2,10 +2,11 @@ import { Suspense, useState, useEffect, useCallback, useRef } from "react"
 import { Space, Button, Row, Col } from "antd"
 import { ErrorBoundary } from "react-error-boundary"
 import { DashboardLayout } from "app/layouts/Layout"
-import { useRouter, useQuery, useParam, BlitzPage, invoke } from "blitz"
+import { useRouter, useQuery, useParam, BlitzPage, invoke, useMutation } from "blitz"
 import getExchange from "app/queries/getExchange"
 import { CenterContent } from "app/components/styles"
 import EmptyAccounts from "app/accounts/components/emptyResults"
+import plaidInvestments from "app/users/mutations/plaidInvestments"
 
 import getUser from "app/users/queries/getUser"
 import getAccounts from "app/accounts/queries/getAccounts"
@@ -25,6 +26,7 @@ export const UserPageComponent = () => {
   const [user] = useQuery(getUser, { where: { id: userId } })
   const mountedRef = useRef(true)
   const [fiatRates, setFiatRates] = useState({})
+  const [plaidInvestmentsMutation] = useMutation(plaidInvestments)
   const [{ accounts }] = useQuery(getAccounts, {
     where: { userId: user.id },
     include: {
@@ -38,6 +40,15 @@ export const UserPageComponent = () => {
 
   const getFiatExchange = useCallback(async () => {
     try {
+      /* //- Investments stuffs TODO: will be removed from here... */
+
+      /* const investments = await plaidInvestmentsMutation({ */
+      /*   plaidToken: accounts[0].user.plaidToken, */
+      /*   userId: accounts[0].user.id, */
+      /* }) */
+
+      /* console.log(investments) */
+
       const fiats = await invoke(getExchange, { type: "FIAT" })
 
       if (!mountedRef.current) return null
@@ -55,12 +66,12 @@ export const UserPageComponent = () => {
     return () => {
       mountedRef.current = false
     }
-  }, [])
+  }, [accounts])
 
   const getSumBalances = (balance = []) => {
     const keys = _.uniqBy(balance, (o) => o.timestamp)
 
-    return _.map(keys, ({ timestamp }) => {
+    const sumedBalances = _.map(keys, ({ timestamp }) => {
       const balanceByDate = _.filter(balance, (o) => o.timestamp === timestamp)
 
       return _.reduce(
@@ -72,6 +83,10 @@ export const UserPageComponent = () => {
         { value: 0 }
       )
     })
+
+    return sumedBalances.sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    )
   }
 
   const renderAccounts = (accounts = []) => {
@@ -96,7 +111,7 @@ export const UserPageComponent = () => {
 
       const balanceSum = getSumBalances(balances)
       const transactions = unsortedTrx.sort(
-        (a, b) => a.confirmedAt.getTime() - b.confirmedAt.getTime()
+        (a, b) => b.confirmedAt.getTime() - a.confirmedAt.getTime()
       )
 
       return (
