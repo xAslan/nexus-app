@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import Layout from "app/layouts/Layout"
-import { useRouter, useQuery, useMutation, useParam, BlitzPage } from "blitz"
+import { useRouter, useQuery, useMutation, useSession, BlitzPage } from "blitz"
 import getUser from "app/users/queries/getUser"
 import updateUser from "app/users/mutations/updateUser"
 import UserForm from "app/users/components/UserForm"
@@ -8,7 +8,7 @@ import ProfilePage from "app/users/components/profilePage"
 
 export const EditUser = () => {
   const router = useRouter()
-  const userId = useParam("userId", "number")
+  const { userId } = useSession()
   const [user, { setQueryData }] = useQuery(getUser, { where: { id: userId } })
   const [updateUserMutation] = useMutation(updateUser)
 

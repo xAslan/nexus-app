@@ -145,6 +145,7 @@ model Asset {
   updatedAt DateTime  @updatedAt
   name      String
   type      AssetType @default(OTHER)
+  subType   String?   @map("sub_type")    
   symbol    String
   address   String    @default("0")
 
@@ -181,7 +182,7 @@ enum TransactionType {
 enum AssetType {
   CRYPTO
   FIAT
-  STOCK
+  SECURITY
   OTHER
 }
 
