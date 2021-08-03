@@ -3,6 +3,7 @@ import saveTrx from "app/transactions/utils/createPlaidTrx"
 import storeTransactions from "app/transactions/utils/create"
 import zaboInit from "app/accounts/utils/zabo-init"
 import plaidClientInit from "app/accounts/utils/plaid-init"
+import moment from "moment"
 
 interface getTransactionsArgs {
   accountType: string
@@ -27,7 +28,10 @@ export default async function getTransactions({
     if (accountType === accountTypes.TRADITIONAL_BANKS) {
       const plaidClient = plaidClientInit()
       const today = new Date()
-      const startDate = normalizeDate(lastSync)
+      const startDate =
+        lastSync === null
+          ? normalizeDate(moment().subtract(3, "months").format())
+          : normalizeDate(lastSync)
       const endDate = normalizeDate(today)
 
       const { transactions } = await plaidClient.getTransactions(plaidToken, startDate, endDate, {
@@ -54,7 +58,9 @@ export default async function getTransactions({
   }
 }
 
-function normalizeDate(date) {
+function normalizeDate(dateString) {
+  const date = new Date(dateString)
+
   const year = date.getFullYear()
   const month = `${date.getMonth() + 1}`.padStart(2, "0")
   const day = `${date.getDate()}`.padStart(2, "0")
