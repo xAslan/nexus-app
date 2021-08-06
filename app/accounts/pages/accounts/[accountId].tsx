@@ -55,8 +55,8 @@ export const Account = () => {
 
     const trx = await createTransactionsMutation({
       accountType: account.type,
-      zaboAccountId: account.zaboAccountId,
-      zaboUserId: account.user.zaboUserObj.id,
+      zaboAccountId: account.zaboAccountId!,
+      zaboUserId: account.user.zaboUserObj?.id!,
       accountId: account.id,
       plaidToken: account.user.plaidToken,
       plaidSubAccounts,

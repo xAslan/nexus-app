@@ -18,9 +18,6 @@ interface syncAccountArgs {
   token?: string
 }
 
-//- TODO: Reduce the number of network requests by grouping zabo & plaid accounts into
-//- one getBalance call.
-
 export async function syncAccount({
   token,
   accountType,

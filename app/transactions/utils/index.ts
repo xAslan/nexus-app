@@ -31,7 +31,8 @@ export default async function getTransactions({
       const startDate =
         lastSync === null
           ? normalizeDate(moment().subtract(3, "months").format())
-          : normalizeDate(lastSync)
+          : normalizeDate(moment(lastSync).subtract(2, "weeks"))
+
       const endDate = normalizeDate(today)
 
       const { transactions } = await plaidClient.getTransactions(plaidToken, startDate, endDate, {

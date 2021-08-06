@@ -26,7 +26,16 @@ const trxObjsConstructor = (trxArray, accountId) => {
     const parties = trxObj.category
 
     const trxType =
-      trxObj.transaction_type === "unresolved" ? "OTHER" : trxObj.transaction_type.toUpperCase()
+      trxObj.payment_channel === "other" && trxObj.pending
+        ? "OTHER"
+        : trxObj.payment_channel === "other" && !trxObj.pending && trxObj.amount < 0
+        ? "DEPOSIT"
+        : trxObj.payment_channel === "other" && !trxObj.pending && trxObj.amount > 0
+        ? "FEE"
+        : trxObj.payment_channel === "in store"
+        ? "STORE"
+        : trxObj.payment_channel.toUpperCase()
+
     const confirmedAt = trxObj.authorized_date
       ? new Date(trxObj.authorized_date)
       : new Date(trxObj.date)
@@ -40,6 +49,7 @@ const trxObjsConstructor = (trxArray, accountId) => {
       },
       amountSent: trxObj.amount,
       currencySent: trxObj.iso_currency_code,
+      pending: trxObj.pending,
       trxType,
       parties,
       confirmedAt,

@@ -29,7 +29,7 @@ model User {
   phone             String?
   accounts          Account[]
   primaryCurrency   String    @default("USD") @map("primary_currency")
-  secondaryCurrency String @default("GBP") @map("secondary_currency")
+  secondaryCurrency String    @default("GBP") @map("secondary_currency")
 
   @@map("user")
 }
@@ -60,8 +60,8 @@ model Institution {
   logoURL   String?     @map("logo_url")
   type      AccountType @default(UNKNOWN) // traditional, brokerage, bank, crypto_exchange, etc. make this into an ENUM and save in DB
 
-  @@map("institution")
   Account Account[]
+  @@map("institution")
 }
 
 model Account {
@@ -83,8 +83,8 @@ model Account {
   syncStatus    String        @default("inactive") @map("sync_status")
   transactions  Transaction[]
 
-  @@map("account")
   institutionId Int?
+  @@map("account")
 }
 
 model Balance {
@@ -145,8 +145,8 @@ model Asset {
   updatedAt DateTime  @updatedAt
   name      String
   type      AssetType @default(OTHER)
-  subType   String?   @map("sub_type")    
-  symbol    String
+  subType   String?   @map("sub_type")
+  symbol    String    @default("UNKNOWN")
   address   String    @default("0")
 
   @@unique(fields: [symbol, address], name: "symbolAddress")
@@ -162,6 +162,7 @@ model Transaction {
   amountReceived   Float           @default(0) @map("amount_received")
   amountSent       Float           @default(0) @map("amount_sent")
   currencyReceived String?         @map("currency_received")
+  pending          Boolean         @default(false)
   currencySent     String?         @map("currency_sent")
   trxType          TransactionType @default(OTHER) @map("trx_type")
   parties          Json?
@@ -170,12 +171,10 @@ model Transaction {
 }
 
 enum TransactionType {
-  WITHDRAWAL
-  TRADE
   DEPOSIT
-  DIGITAL
-  PLACE
-  SPECIAL
+  FEE
+  ONLINE
+  STORE
   OTHER
 }
 
